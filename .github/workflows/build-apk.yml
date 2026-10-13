@@ -41,6 +41,18 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # Google removed the obsolete `tools` package (the action default).
+          # Install only packages required for compileSdk 36 / AGP 8.13.
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+
+      # #region agent log
+      - name: Confirm SDK packages
+        run: |
+          echo "SDK_ROOT=${ANDROID_SDK_ROOT:-unset}"
+          echo "Installed packages:"
+          sdkmanager --list_installed || true
+      # #endregion
 
       - name: Build Android APK with Gradle
         working-directory: android
