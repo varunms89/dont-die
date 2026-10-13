@@ -28,16 +28,36 @@ jobs:
       - name: Build Web Game
         run: npm run build
 
-      - name: Copy Web Assets to Android Project
+      # #region agent log
+      - name: Debug plugins dir before cap sync
         run: |
-          mkdir -p android/app/src/main/assets/public
-          cp -r dist/* android/app/src/main/assets/public/
+          python3 - <<'PY'
+          import json, os, time
+          p = "android/capacitor-cordova-android-plugins/cordova.variables.gradle"
+          print(json.dumps({"sessionId":"881072","runId":"post-fix","hypothesisId":"D","location":"ci:before-cap-sync","message":"cordova.variables.gradle exists?","data":{"path":p,"exists":os.path.exists(p)},"timestamp":int(time.time()*1000)}))
+          PY
+      # #endregion
 
-      - name: Setup Java 17
+      - name: Sync Capacitor Android
+        run: npx cap sync android
+
+      # #region agent log
+      - name: Debug plugins dir after cap sync
+        run: |
+          python3 - <<'PY'
+          import json, os, time
+          p = "android/capacitor-cordova-android-plugins/cordova.variables.gradle"
+          d = "android/capacitor-cordova-android-plugins"
+          listing = os.listdir(d) if os.path.isdir(d) else []
+          print(json.dumps({"sessionId":"881072","runId":"post-fix","hypothesisId":"D","location":"ci:after-cap-sync","message":"cordova.variables.gradle exists?","data":{"path":p,"exists":os.path.exists(p),"listing":listing},"timestamp":int(time.time()*1000)}))
+          PY
+      # #endregion
+
+      - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
