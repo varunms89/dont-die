@@ -17,9 +17,9 @@ export class Camera {
     this.shakeEnabled = false;
   }
 
-  public shake(intensity: number) {
-    if (!this.shakeEnabled) return;
-    this.shakeIntensity = Math.min(this.shakeIntensity + intensity, 25);
+  public shake(_intensity: number) {
+    // Vibration effect removed as requested
+    return;
   }
 
   public update(dt: number) {

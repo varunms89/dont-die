@@ -1,15 +1,14 @@
-class_name TrollManager
 extends RefCounted
 
-var player: Player
-var door: ExitDoor
+var player: CharacterBody2D
+var door: Area2D
 var blocks_by_id: Dictionary = {}
 var spikes_by_id: Dictionary = {}
 var triggers: Array = []
 var executed_trigger_ids: Dictionary = {}
 var main_node: Node2D
 
-func init(p_player: Player, p_door: ExitDoor, p_blocks: Array[LevelBlock], p_spikes: Array[Spike], p_triggers: Array, p_main: Node2D) -> void:
+func init(p_player: CharacterBody2D, p_door: Area2D, p_blocks: Array, p_spikes: Array, p_triggers: Array, p_main: Node2D) -> void:
 	player = p_player
 	door = p_door
 	main_node = p_main
@@ -19,18 +18,20 @@ func init(p_player: Player, p_door: ExitDoor, p_blocks: Array[LevelBlock], p_spi
 	executed_trigger_ids.clear()
 
 	for b in p_blocks:
-		if b.block_id != "":
-			blocks_by_id[b.block_id] = b
+		var bid = b.get("block_id")
+		if bid != null and str(bid) != "":
+			blocks_by_id[str(bid)] = b
 
 	for s in p_spikes:
-		if s.spike_id != "":
-			spikes_by_id[s.spike_id] = s
+		var sid = s.get("spike_id")
+		if sid != null and str(sid) != "":
+			spikes_by_id[str(sid)] = s
 
 func reset() -> void:
 	executed_trigger_ids.clear()
 
 func check_triggers(just_jumped: bool) -> void:
-	if player == null or player.is_dead:
+	if player == null or player.get("is_dead") == true:
 		return
 
 	for trigger in triggers:
@@ -51,7 +52,8 @@ func check_triggers(just_jumped: bool) -> void:
 					should_fire = true
 			"distance_to_door":
 				if door != null:
-					var dist: float = player.position.distance_to(door.position + (door.door_size / 2.0))
+					var dsize: Vector2 = door.get("door_size") if door.get("door_size") != null else Vector2(32, 44)
+					var dist: float = player.position.distance_to(door.position + (dsize / 2.0))
 					if dist < float(params.get("distance", 100.0)):
 						should_fire = true
 			"distance_to_point":
@@ -78,7 +80,7 @@ func execute_action(trigger: Dictionary) -> void:
 	var action: String = str(trigger.get("action", ""))
 	var params: Dictionary = trigger.get("params", {})
 
-	if player != null:
+	if player != null and player.has_method("set_shocked"):
 		player.set_shocked(0.6)
 
 	match action:
@@ -86,21 +88,17 @@ func execute_action(trigger: Dictionary) -> void:
 			var ids = params.get("blockIds", [])
 			var delay: float = float(params.get("delay", 0.15))
 			for bid in ids:
-				if blocks_by_id.has(bid):
-					blocks_by_id[bid].trigger_fall(0.0, delay)
+				if blocks_by_id.has(str(bid)):
+					blocks_by_id[str(bid)].trigger_fall(0.0, delay)
 			AudioManager.play_trap()
-			if main_node.has_method("shake_camera"):
-				main_node.shake_camera(6.0)
 
 		"raise_spikes":
 			var ids = params.get("spikeIds", [])
 			var speed: float = float(params.get("speed", -350.0))
 			for sid in ids:
-				if spikes_by_id.has(sid):
-					spikes_by_id[sid].pop_up(speed)
+				if spikes_by_id.has(str(sid)):
+					spikes_by_id[str(sid)].pop_up(speed)
 			AudioManager.play_troll()
-			if main_node.has_method("shake_camera"):
-				main_node.shake_camera(8.0)
 
 		"flee_door":
 			if door != null:
@@ -114,37 +112,31 @@ func execute_action(trigger: Dictionary) -> void:
 			var ids = params.get("spikeIds", [])
 			var force: float = float(params.get("force", 480.0))
 			for sid in ids:
-				if spikes_by_id.has(sid):
-					spikes_by_id[sid].jump(force)
+				if spikes_by_id.has(str(sid)):
+					spikes_by_id[str(sid)].jump(force)
 			AudioManager.play_jump()
 
 		"crush_ceiling":
 			var ids = params.get("blockIds", [])
 			var speed: float = float(params.get("speed", 500.0))
 			for bid in ids:
-				if blocks_by_id.has(bid):
-					blocks_by_id[bid].trigger_fall(speed, 0.0)
+				if blocks_by_id.has(str(bid)):
+					blocks_by_id[str(bid)].trigger_fall(speed, 0.0)
 			AudioManager.play_trap()
 			spawn_floating_text("CRUSH! 💥", player.position + Vector2(0, -30), Color(0.95, 0.25, 0.25))
-			if main_node.has_method("shake_camera"):
-				main_node.shake_camera(12.0)
 
 		"flip_gravity":
 			if player != null:
-				player.gravity_dir = -player.gravity_dir
+				player.set("gravity_dir", -int(player.get("gravity_dir")))
 				AudioManager.play_troll()
 				spawn_floating_text("GRAVITY FLIPPED! 🙃", player.position + Vector2(0, -30), Color(0.65, 0.35, 0.95))
-				if main_node.has_method("shake_camera"):
-					main_node.shake_camera(10.0)
 
 		"invert_controls":
 			if player != null:
-				player.inverted_controls = !player.inverted_controls
+				player.set("inverted_controls", not bool(player.get("inverted_controls")))
 				AudioManager.play_troll()
 				var msg: String = str(params.get("message", "CONTROLS INVERTED! 🔄"))
 				spawn_floating_text(msg, player.position + Vector2(0, -30), Color(0.98, 0.55, 0.15))
-				if main_node.has_method("shake_camera"):
-					main_node.shake_camera(8.0)
 
 		"fake_door_reveal":
 			if door != null:
@@ -152,8 +144,6 @@ func execute_action(trigger: Dictionary) -> void:
 				var real_y: float = float(params.get("realDoorY", door.position.y))
 				door.reveal_fake(real_x, real_y)
 				spawn_floating_text("SIKE! 😂", door.position + Vector2(0, -25), Color(0.95, 0.25, 0.25))
-				if main_node.has_method("shake_camera"):
-					main_node.shake_camera(10.0)
 
 		"rocket_door":
 			if door != null:
@@ -161,8 +151,6 @@ func execute_action(trigger: Dictionary) -> void:
 				var new_y: float = float(params.get("newY", door.position.y))
 				door.launch_rocket(new_x, new_y)
 				spawn_floating_text("TO THE MOON! 🚀", door.position + Vector2(0, -20), Color(0.25, 0.75, 0.95))
-				if main_node.has_method("shake_camera"):
-					main_node.shake_camera(14.0)
 
 		"troll_message":
 			var text: String = str(params.get("text", "LOL! 😈"))
@@ -170,9 +158,7 @@ func execute_action(trigger: Dictionary) -> void:
 			AudioManager.play_troll()
 
 		"shake_camera":
-			var intensity: float = float(params.get("intensity", 15.0))
-			if main_node.has_method("shake_camera"):
-				main_node.shake_camera(intensity)
+			# Screen vibration / shake effect removed as requested
 			AudioManager.play_trap()
 
 func spawn_floating_text(text: String, pos: Vector2, color: Color) -> void:

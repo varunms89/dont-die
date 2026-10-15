@@ -1,4 +1,3 @@
-class_name Spike
 extends Area2D
 
 @export var spike_id: String = ""
@@ -61,14 +60,13 @@ func _physics_process(delta: float) -> void:
 			is_moving = false
 
 func _on_body_entered(body: Node2D) -> void:
-	if body is Player and not body.is_dead and visible:
+	if body.has_method("kill") and not body.get("is_dead") and visible:
 		body.kill("Impaled on spikes!")
 
 func _draw() -> void:
 	if not visible:
 		return
 
-	# Draw triangle spike(s)
 	var tooth_w: float = 24.0
 	var count: int = max(1, int(spike_size.x / tooth_w))
 	var step_w: float = spike_size.x / float(count)
@@ -97,5 +95,4 @@ func _draw() -> void:
 			points.append(Vector2(0, spike_size.y))
 
 		draw_colored_polygon(points, spike_color)
-		# Edge highlight
 		draw_polyline(points, Color.WHITE, 1.0)

@@ -1,8 +1,7 @@
-class_name LevelBlock
 extends AnimatableBody2D
 
-signal crumbled(block: LevelBlock)
-signal stepped_on(block: LevelBlock)
+signal crumbled(block: Node2D)
+signal stepped_on(block: Node2D)
 
 @export var block_id: String = ""
 @export var block_type: String = "solid" # solid, crumble, fake, invisible, bouncy, ice
@@ -83,7 +82,6 @@ func _physics_process(delta: float) -> void:
 
 		# Check if falling block squishes the player
 		if fall_velocity_y > 100.0:
-			var overlapping_bodies: Array[Node2D] = []
 			var space_state = get_world_2d().direct_space_state
 			var query = PhysicsShapeQueryParameters2D.new()
 			var rect_shape = RectangleShape2D.new()
@@ -94,7 +92,7 @@ func _physics_process(delta: float) -> void:
 			var results = space_state.intersect_shape(query, 4)
 			for res in results:
 				var collider = res.collider
-				if collider is Player and not collider.is_dead:
+				if collider.has_method("kill") and not collider.get("is_dead"):
 					collider.kill("Squashed by falling ceiling!")
 
 func _draw() -> void:
@@ -107,7 +105,6 @@ func _draw() -> void:
 		# Trampoline block: vibrant spring cyan with chevron stripes
 		draw_rect(rect, Color(0.05, 0.25, 0.35), true)
 		draw_rect(rect, Color(0.2, 0.9, 0.95), false, 2.0)
-		# Spring accents
 		draw_line(Vector2(4, 4), Vector2(block_size.x - 4, 4), Color(0.2, 0.9, 0.95), 3.0)
 	elif block_type == "ice":
 		# Slippery icy runway
@@ -119,12 +116,10 @@ func _draw() -> void:
 		var crumb_col = Color(0.7, 0.35, 0.1) if shake_timer <= 0.0 else Color(0.9, 0.5, 0.2)
 		draw_rect(rect, crumb_col, true)
 		draw_rect(rect, Color(1.0, 0.6, 0.2), false, 1.5)
-		# Cracks
 		draw_line(Vector2(block_size.x * 0.3, 0), Vector2(block_size.x * 0.45, block_size.y * 0.7), Color(0.2, 0.1, 0.05), 1.5)
 	else:
 		# Standard Solid / Fake Block
 		draw_rect(rect, color_base, true)
 		draw_rect(rect, color_top, false, 1.0)
-		# Top highlight bar
 		if block_size.y > 6.0:
 			draw_rect(Rect2(Vector2.ZERO, Vector2(block_size.x, 4.0)), color_top, true)

@@ -1,4 +1,3 @@
-class_name MainGame
 extends Node2D
 
 const BLOCK_SCENE = preload("res://scenes/block.tscn")
@@ -6,8 +5,9 @@ const SPIKE_SCENE = preload("res://scenes/spike.tscn")
 const DOOR_SCENE = preload("res://scenes/door.tscn")
 const PLAYER_SCENE = preload("res://scenes/player.tscn")
 const FLOATING_TEXT_SCENE = preload("res://scenes/floating_text.tscn")
+const TrollManagerClass = preload("res://scripts/troll_manager.gd")
 
-@onready var hud: HUD = $HUD
+@onready var hud: CanvasLayer = $HUD
 @onready var camera: Camera2D = $Camera2D
 @onready var level_container: Node2D = $LevelContainer
 @onready var background_rect: ColorRect = $BackgroundRect
@@ -17,21 +17,20 @@ var current_level_index: int = 0
 var deaths_count: int = 0
 var is_transitioning: bool = false
 
-var player: Player
-var current_door: ExitDoor
-var current_blocks: Array[LevelBlock] = []
-var current_spikes: Array[Spike] = []
-var troll_manager: TrollManager = TrollManager.new()
+var player: CharacterBody2D
+var current_door: Area2D
+var current_blocks: Array = []
+var current_spikes: Array = []
+var troll_manager = TrollManagerClass.new()
 
 var just_jumped_this_frame: bool = false
-var camera_shake_amount: float = 0.0
 
 func _ready() -> void:
 	load_all_levels()
 
 	if hud:
-		hud.restart_requested.connect(restart_level)
-		hud.level_selected.connect(func(idx): load_level(idx))
+		hud.connect("restart_requested", Callable(self, "restart_level"))
+		hud.connect("level_selected", Callable(self, "load_level"))
 
 	load_level(0)
 
@@ -76,36 +75,36 @@ func load_level(index: int) -> void:
 	# 1. Spawn Blocks
 	var blocks_list = lvl_data.get("blocks", [])
 	for b_info in blocks_list:
-		var b_node: LevelBlock = BLOCK_SCENE.instantiate() as LevelBlock
-		b_node.block_id = str(b_info.get("id", ""))
-		b_node.block_type = str(b_info.get("type", "solid"))
-		b_node.block_size = Vector2(float(b_info.get("w", 80)), float(b_info.get("h", 40)))
+		var b_node = BLOCK_SCENE.instantiate()
+		b_node.set("block_id", str(b_info.get("id", "")))
+		b_node.set("block_type", str(b_info.get("type", "solid")))
+		b_node.set("block_size", Vector2(float(b_info.get("w", 80)), float(b_info.get("h", 40))))
 		b_node.position = Vector2(float(b_info.get("x", 0)), float(b_info.get("y", 0)))
-		b_node.color_base = block_base_col
-		b_node.color_top = block_top_col
+		b_node.set("color_base", block_base_col)
+		b_node.set("color_top", block_top_col)
 		level_container.add_child(b_node)
 		current_blocks.append(b_node)
 
 	# 2. Spawn Spikes
 	var spikes_list = lvl_data.get("spikes", [])
 	for s_info in spikes_list:
-		var s_node: Spike = SPIKE_SCENE.instantiate() as Spike
-		s_node.spike_id = str(s_info.get("id", ""))
-		s_node.direction = str(s_info.get("direction", "up"))
-		s_node.spike_size = Vector2(float(s_info.get("w", 24)), float(s_info.get("h", 24)))
+		var s_node = SPIKE_SCENE.instantiate()
+		s_node.set("spike_id", str(s_info.get("id", "")))
+		s_node.set("direction", str(s_info.get("direction", "up")))
+		s_node.set("spike_size", Vector2(float(s_info.get("w", 24)), float(s_info.get("h", 24))))
 		s_node.position = Vector2(float(s_info.get("x", 0)), float(s_info.get("y", 0)))
-		s_node.jumps_with_player = bool(s_info.get("jumpsWithPlayer", false))
-		s_node.is_hidden = bool(s_info.get("hidden", false))
-		s_node.spike_color = spike_col
+		s_node.set("jumps_with_player", bool(s_info.get("jumpsWithPlayer", false)))
+		s_node.set("is_hidden", bool(s_info.get("hidden", false)))
+		s_node.set("spike_color", spike_col)
 		level_container.add_child(s_node)
 		current_spikes.append(s_node)
 
 	# 3. Spawn Door
 	var door_info = lvl_data.get("door", {})
-	current_door = DOOR_SCENE.instantiate() as ExitDoor
-	current_door.door_size = Vector2(float(door_info.get("w", 32)), float(door_info.get("h", 44)))
+	current_door = DOOR_SCENE.instantiate()
+	current_door.set("door_size", Vector2(float(door_info.get("w", 32)), float(door_info.get("h", 44))))
 	current_door.position = Vector2(float(door_info.get("x", 700)), float(door_info.get("y", 336)))
-	current_door.entered.connect(_on_level_cleared)
+	current_door.connect("entered", Callable(self, "_on_level_cleared"))
 	level_container.add_child(current_door)
 
 	# 4. Spawn Player
@@ -114,13 +113,13 @@ func load_level(index: int) -> void:
 	var grav_dir: int = int(lvl_data.get("gravityDirection", 1))
 
 	if player == null:
-		player = PLAYER_SCENE.instantiate() as Player
+		player = PLAYER_SCENE.instantiate()
 		add_child(player)
-		player.died.connect(_on_player_died)
-		player.jumped.connect(func(): just_jumped_this_frame = true)
+		player.connect("died", Callable(self, "_on_player_died"))
+		player.connect("jumped", Callable(self, "_on_player_jumped"))
 
-	player.respawn(start_pos, grav_dir)
-	player.is_on_ice = bool(lvl_data.get("icePhysics", false))
+	player.call("respawn", start_pos, grav_dir)
+	player.set("is_on_ice", bool(lvl_data.get("icePhysics", false)))
 
 	# 5. Initialize Troll Manager
 	var triggers = lvl_data.get("triggers", [])
@@ -130,7 +129,11 @@ func load_level(index: int) -> void:
 	var title = str(lvl_data.get("title", "Level " + str(current_level_index + 1)))
 	var subtitle = str(lvl_data.get("subtitle", ""))
 	var hint = str(lvl_data.get("hint", lvl_data.get("initialHint", "")))
-	hud.update_hud(title, subtitle, deaths_count, hint)
+	if hud and hud.has_method("update_hud"):
+		hud.update_hud(title, subtitle, deaths_count, hint)
+
+func _on_player_jumped() -> void:
+	just_jumped_this_frame = true
 
 func restart_level() -> void:
 	if levels_data.is_empty():
@@ -141,33 +144,32 @@ func restart_level() -> void:
 	var start_pos = Vector2(float(start_pos_info.get("x", 80)), float(start_pos_info.get("y", 350)))
 	var grav_dir: int = int(lvl_data.get("gravityDirection", 1))
 
-	# Reset all entities
 	if player:
-		player.respawn(start_pos, grav_dir)
-		player.is_on_ice = bool(lvl_data.get("icePhysics", false))
+		player.call("respawn", start_pos, grav_dir)
+		player.set("is_on_ice", bool(lvl_data.get("icePhysics", false)))
 
 	if current_door:
-		current_door.reset_door()
+		current_door.call("reset_door")
 
 	for b in current_blocks:
-		b.reset_block()
+		b.call("reset_block")
 
 	for s in current_spikes:
-		s.reset_spike()
+		s.call("reset_spike")
 
 	troll_manager.reset()
 	is_transitioning = false
 
 func _on_player_died() -> void:
 	deaths_count += 1
-	shake_camera(14.0)
 	var lvl_data: Dictionary = levels_data[current_level_index]
 	var title = str(lvl_data.get("title", ""))
 	var subtitle = str(lvl_data.get("subtitle", ""))
 	var hint = str(lvl_data.get("hint", ""))
-	hud.update_hud(title, subtitle, deaths_count, hint)
+	if hud and hud.has_method("update_hud"):
+		hud.update_hud(title, subtitle, deaths_count, hint)
 
-	# Auto-restart after snappy delay (0.32s)
+	# Auto-restart after short delay (0.32s)
 	await get_tree().create_timer(0.32).timeout
 	restart_level()
 
@@ -183,16 +185,17 @@ func _on_level_cleared() -> void:
 	else:
 		spawn_floating_text("YOU BEAT THE GAME! 🏆", Vector2(400, 200), Color(1, 0.8, 0.2))
 
-func shake_camera(intensity: float) -> void:
-	camera_shake_amount = max(camera_shake_amount, intensity)
+func shake_camera(_intensity: float) -> void:
+	# Screen vibration / shake effect removed as requested
+	pass
 
 func spawn_floating_text(text: String, pos: Vector2, color: Color) -> void:
 	var ft = FLOATING_TEXT_SCENE.instantiate()
 	ft.position = pos
-	ft.setup(text, color)
+	ft.call("setup", text, color)
 	add_child(ft)
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	# Quick restart hotkey
 	if Input.is_action_just_pressed("restart") or Input.is_key_pressed(KEY_R):
 		restart_level()
@@ -201,17 +204,10 @@ func _physics_process(delta: float) -> void:
 	troll_manager.check_triggers(just_jumped_this_frame)
 	just_jumped_this_frame = false
 
-	# Camera Shake decay
-	if camera_shake_amount > 0.0:
-		camera.offset = Vector2(
-			randf_range(-camera_shake_amount, camera_shake_amount),
-			randf_range(-camera_shake_amount, camera_shake_amount)
-		)
-		camera_shake_amount = move_toward(camera_shake_amount, 0.0, delta * 30.0)
-	else:
-		camera.offset = Vector2.ZERO
+	# Ensure camera stays calm without vibration
+	camera.offset = Vector2.ZERO
 
 	# Check off-screen fall death
-	if player and not player.is_dead:
+	if player and not bool(player.get("is_dead")):
 		if player.position.y > 520.0 or player.position.y < -150.0:
-			player.kill("Fell into the void!")
+			player.call("kill", "Fell into the void!")

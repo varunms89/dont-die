@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8t4v1y7xk9pm"]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/floating_text.gd" id="1_script"]
 

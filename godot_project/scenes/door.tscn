@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://b1b8a92k3e4df"]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/door.gd" id="1_door"]
 

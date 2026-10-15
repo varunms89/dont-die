@@ -1,4 +1,3 @@
-class_name ExitDoor
 extends Area2D
 
 signal entered()
@@ -49,7 +48,6 @@ func launch_rocket(new_x: float, new_y: float) -> void:
 func reveal_fake(real_door_x: float, real_door_y: float) -> void:
 	is_fake = true
 	AudioManager.play_troll()
-	# Reposition as real door after brief delay
 	await get_tree().create_timer(0.8).timeout
 	position = Vector2(real_door_x, real_door_y)
 	is_fake = false
@@ -80,7 +78,6 @@ func _physics_process(delta: float) -> void:
 	if is_rocket:
 		position.y += rocket_vy * delta
 		if position.y < -100.0 and rocket_target_pos != Vector2.ZERO:
-			# Descend at new target position
 			position.x = rocket_target_pos.x
 			rocket_vy = 300.0
 		if rocket_vy > 0.0 and position.y >= rocket_target_pos.y:
@@ -91,26 +88,22 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func _on_body_entered(body: Node2D) -> void:
-	if body is Player and not body.is_dead and not is_opened:
+	if body.has_method("kill") and not body.get("is_dead") and not is_opened:
 		if is_fake or is_fleeing:
-			return # Decoy or running away
+			return
 		is_opened = true
 		AudioManager.play_win()
 		emit_signal("entered")
 
 func _draw() -> void:
 	var rect: Rect2 = Rect2(Vector2.ZERO, door_size)
-
-	# Frame
 	draw_rect(rect, frame_color, false, 3.0)
 
-	# Glowing inner swirl portal
 	var inner_rect: Rect2 = Rect2(3.0, 3.0, door_size.x - 6.0, door_size.y - 6.0)
 	var glow_factor: float = 0.5 + 0.5 * sin(pulse_time * 6.0)
 	var portal_col: Color = portal_color_1.lerp(portal_color_2, glow_factor)
 	draw_rect(inner_rect, portal_col, true)
 
-	# Portal rings / swirls
 	var center: Vector2 = door_size / 2.0
 	var ring_r: float = (door_size.x * 0.3) * (0.8 + 0.2 * sin(pulse_time * 8.0))
 	draw_circle(center, ring_r, Color(1, 1, 1, 0.4))

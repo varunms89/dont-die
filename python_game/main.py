@@ -544,19 +544,14 @@ class Door:
 
 class Camera:
     def __init__(self):
-        self.shake_amount = 0.0
         self.offset = [0.0, 0.0]
 
     def shake(self, amount):
-        self.shake_amount = max(self.shake_amount, amount)
+        # Vibration effect removed as requested
+        pass
 
     def update(self, dt):
-        if self.shake_amount > 0:
-            self.offset[0] = random.uniform(-self.shake_amount, self.shake_amount)
-            self.offset[1] = random.uniform(-self.shake_amount, self.shake_amount)
-            self.shake_amount = max(0.0, self.shake_amount - dt * 30.0)
-        else:
-            self.offset = [0.0, 0.0]
+        self.offset = [0.0, 0.0]
 
 
 class Game:
