@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://c5l0x4m1v2k3d"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://dmv72q9k1s8ep" path="res://scenes/hud.tscn" id="2_hud"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="BackgroundRect" type="ColorRect" parent="."]
+offset_right = 800.0
+offset_bottom = 450.0
+color = Color(0.05, 0.03, 0.1, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="LevelContainer" type="Node2D" parent="."]
+
+[node name="HUD" parent="." instance=ExtResource("2_hud")]

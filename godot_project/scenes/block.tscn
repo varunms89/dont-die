@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://dmj62q8p5v01k"]
+
+[ext_resource type="Script" path="res://scripts/block.gd" id="1_block"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_block"]
+size = Vector2(80, 40)
+
+[node name="Block" type="AnimatableBody2D"]
+collision_layer = 2
+collision_mask = 1
+sync_to_physics = true
+script = ExtResource("1_block")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_block")

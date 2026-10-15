@@ -1,0 +1,132 @@
+[gd_scene load_steps=2 format=3 uid="uid://dmv72q9k1s8ep"]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 10.0
+offset_right = -16.0
+offset_bottom = 44.0
+grow_horizontal = 2
+
+[node name="TitleLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 16
+text = "Level 1 — Just a normal walk"
+vertical_alignment = 1
+
+[node name="DeathsLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_font_sizes/font_size = 16
+text = "💀 0"
+vertical_alignment = 1
+
+[node name="VSeparator" type="VSeparator" parent="TopBar"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+
+[node name="RightButtons" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HintButton" type="Button" parent="TopBar/RightButtons"]
+layout_mode = 2
+text = "💡 Clue"
+
+[node name="LevelsButton" type="Button" parent="TopBar/RightButtons"]
+layout_mode = 2
+text = "☰ Levels"
+
+[node name="RestartButton" type="Button" parent="TopBar/RightButtons"]
+layout_mode = 2
+text = "↻ Restart (R)"
+
+[node name="MuteButton" type="Button" parent="TopBar/RightButtons"]
+layout_mode = 2
+text = "🔊"
+
+[node name="HintBanner" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -260.0
+offset_top = 50.0
+offset_right = 260.0
+offset_bottom = 100.0
+grow_horizontal = 2
+
+[node name="HintLabel" type="Label" parent="HintBanner"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 14
+text = "Troll Clue"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="LevelSelectModal" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -160.0
+offset_right = 280.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="LevelSelectModal"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="Label" parent="LevelSelectModal/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "SELECT LEVEL (1 — 256)"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="LevelSelectModal/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LevelGrid" type="GridContainer" parent="LevelSelectModal/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 10
+
+[node name="MobileControls" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BtnLeft" type="TouchScreenButton" parent="MobileControls"]
+position = Vector2(24, 340)
+action = "move_left"
+
+[node name="BtnRight" type="TouchScreenButton" parent="MobileControls"]
+position = Vector2(110, 340)
+action = "move_right"
+
+[node name="BtnJump" type="TouchScreenButton" parent="MobileControls"]
+position = Vector2(700, 340)
+action = "jump"

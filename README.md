@@ -6,11 +6,23 @@ The goal looks deceivingly simple: **reach the door**. But every step is a trap.
 
 ---
 
-## 🎮 Play Directly
+## 🕹️ Available Editions
 
-The development server is running locally:
-- **Local URL:** [http://localhost:5173/](http://localhost:5173/)
-- **Mobile/Network URL:** Check console for your local IP (e.g., `http://192.168.x.x:5173/`)
+### 1. 🎮 Godot 4 (GDScript) — Specialized Gaming Language
+Located in [`godot_project/`](file:///Users/varunms/.gemini/antigravity/scratch/dont-die/godot_project):
+- Full **Godot 4** project with dedicated GDScript scripts and scenes (`.tscn`).
+- Open `godot_project/project.godot` directly in the Godot 4 editor.
+- See [`godot_project/README.md`](file:///Users/varunms/.gemini/antigravity/scratch/dont-die/godot_project/README.md) for instructions.
+
+### 2. 🐍 Python (Pygame-CE)
+Located in [`python_game/`](file:///Users/varunms/.gemini/antigravity/scratch/dont-die/python_game):
+- Run immediately with Python: `pip install -r python_game/requirements.txt && python3 python_game/main.py`.
+- Standalone desktop edition with full audio, physics, and troll mechanics.
+- See [`python_game/README.md`](file:///Users/varunms/.gemini/antigravity/scratch/dont-die/python_game/README.md) for details.
+
+### 3. 🌐 Web & Mobile (TypeScript + Vite + Capacitor)
+- **Local Dev:** `npm run dev` (runs at http://localhost:5173/)
+- Android Capacitor project in `android/`.
 
 ---
 
