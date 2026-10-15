@@ -99,6 +99,14 @@ class Player:
         self.scale_y = 1.0
         self.blink_timer = 2.0
         self.is_blinking = False
+        # Abilities: Double Jump & Air Dash
+        self.max_jumps = 2
+        self.jumps_left = 2
+        self.can_dash = True
+        self.is_dashing = False
+        self.dash_timer = 0.0
+        self.dash_cooldown = 0.0
+        self.ghost_trails = []
 
     @property
     def rect(self):
@@ -120,8 +128,15 @@ class Player:
         self.is_on_ice = False
         self.scale_x = 1.0
         self.scale_y = 1.0
+        self.max_jumps = 2
+        self.jumps_left = 2
+        self.can_dash = True
+        self.is_dashing = False
+        self.dash_timer = 0.0
+        self.dash_cooldown = 0.0
+        self.ghost_trails.clear()
 
-    def update(self, dt, input_left, input_right, jump_pressed, jump_released, blocks, sounds):
+    def update(self, dt, input_left, input_right, jump_pressed, jump_released, dash_pressed, blocks, sounds):
         if self.is_dead:
             return False, False
 
@@ -135,6 +150,8 @@ class Player:
             self.coyote_timer -= dt
         if self.jump_buffer_timer > 0:
             self.jump_buffer_timer -= dt
+        if self.dash_cooldown > 0:
+            self.dash_cooldown -= dt
 
         self.blink_timer -= dt
         if self.blink_timer <= 0:
@@ -149,52 +166,90 @@ class Player:
         if self.inverted_controls:
             input_left, input_right = input_right, input_left
 
-        if jump_pressed:
-            self.jump_buffer_timer = 0.12
+        # Dash Trigger
+        if dash_pressed and self.can_dash and self.dash_cooldown <= 0 and not self.is_dashing:
+            self.is_dashing = True
+            self.dash_timer = 0.16
+            self.dash_cooldown = 0.45
+            self.can_dash = False
+            self.scale_x = 1.5
+            self.scale_y = 0.65
+            self.vx = 540.0 * self.facing_dir
+            self.vy = 0.0
+            sounds.play('dash')
 
-        # Horizontal movement
-        target_vx = 0.0
-        if input_left:
-            target_vx -= MOVE_SPEED
-            self.facing_dir = -1
-        if input_right:
-            target_vx += MOVE_SPEED
-            self.facing_dir = 1
-
-        friction = ICE_FRICTION if self.is_on_ice else (NORMAL_FRICTION if self.is_grounded else AIR_FRICTION)
-        if target_vx != 0:
-            accel = 0.08 if self.is_on_ice else 0.45
-            self.vx += (target_vx - self.vx) * accel
+        if self.is_dashing:
+            self.dash_timer -= dt
+            self.vx = 540.0 * self.facing_dir
+            self.vy = 0.0
+            self.ghost_trails.append({
+                'x': self.x, 'y': self.y, 'w': self.w, 'h': self.h,
+                'alpha': 200, 'color': (60, 220, 255)
+            })
+            if self.dash_timer <= 0:
+                self.is_dashing = False
+                self.vx = MOVE_SPEED * self.facing_dir * 0.8
         else:
-            self.vx *= friction
-            if abs(self.vx) < 2:
-                self.vx = 0
+            # Horizontal movement
+            target_vx = 0.0
+            if input_left:
+                target_vx -= MOVE_SPEED
+                self.facing_dir = -1
+            if input_right:
+                target_vx += MOVE_SPEED
+                self.facing_dir = 1
 
-        # Jump execution
-        can_jump = self.is_grounded or self.coyote_timer > 0
-        if self.jump_buffer_timer > 0 and can_jump:
-            self.vy = -JUMP_FORCE * self.gravity_dir
-            self.is_grounded = False
-            self.coyote_timer = 0
-            self.jump_buffer_timer = 0
-            self.scale_x = 0.75
-            self.scale_y = 1.35
-            sounds.play('jump')
-            jumped = True
+            friction = ICE_FRICTION if self.is_on_ice else (NORMAL_FRICTION if self.is_grounded else AIR_FRICTION)
+            if target_vx != 0:
+                accel = 0.08 if self.is_on_ice else 0.45
+                self.vx += (target_vx - self.vx) * accel
+            else:
+                self.vx *= friction
+                if abs(self.vx) < 2:
+                    self.vx = 0
 
-        # Variable jump cut
-        if jump_released:
-            if self.gravity_dir == 1 and self.vy < -150:
-                self.vy *= 0.45
-            elif self.gravity_dir == -1 and self.vy > 150:
-                self.vy *= 0.45
+            if jump_pressed:
+                self.jump_buffer_timer = 0.12
 
-        # Gravity
-        self.vy += GRAVITY_ACCEL * self.gravity_dir * dt
-        if self.gravity_dir == 1 and self.vy > MAX_FALL_SPEED:
-            self.vy = MAX_FALL_SPEED
-        elif self.gravity_dir == -1 and self.vy < -MAX_FALL_SPEED:
-            self.vy = -MAX_FALL_SPEED
+            # Jump & Double Jump
+            can_jump = self.is_grounded or self.coyote_timer > 0
+            if self.jump_buffer_timer > 0:
+                if can_jump:
+                    self.vy = -JUMP_FORCE * self.gravity_dir
+                    self.is_grounded = False
+                    self.coyote_timer = 0
+                    self.jump_buffer_timer = 0
+                    self.jumps_left = self.max_jumps - 1
+                    self.scale_x = 0.75
+                    self.scale_y = 1.35
+                    sounds.play('jump')
+                    jumped = True
+                elif self.jumps_left > 0:
+                    self.vy = -JUMP_FORCE * 0.95 * self.gravity_dir
+                    self.jumps_left -= 1
+                    self.jump_buffer_timer = 0
+                    self.scale_x = 0.70
+                    self.scale_y = 1.40
+                    sounds.play('jump')
+                    self.ghost_trails.append({
+                        'x': self.x, 'y': self.y, 'w': self.w, 'h': self.h,
+                        'alpha': 220, 'color': (255, 200, 40)
+                    })
+                    jumped = True
+
+            # Variable jump cut
+            if jump_released:
+                if self.gravity_dir == 1 and self.vy < -150:
+                    self.vy *= 0.45
+                elif self.gravity_dir == -1 and self.vy > 150:
+                    self.vy *= 0.45
+
+            # Gravity
+            self.vy += GRAVITY_ACCEL * self.gravity_dir * dt
+            if self.gravity_dir == 1 and self.vy > MAX_FALL_SPEED:
+                self.vy = MAX_FALL_SPEED
+            elif self.gravity_dir == -1 and self.vy < -MAX_FALL_SPEED:
+                self.vy = -MAX_FALL_SPEED
 
         # X collision
         self.x += self.vx * dt
@@ -227,6 +282,8 @@ class Player:
                         self.y = b.rect.top - self.h
                         self.vy = 0
                         self.is_grounded = True
+                        self.jumps_left = self.max_jumps
+                        self.can_dash = True
                         self.coyote_timer = 0.10
                         if not was_grounded:
                             landed = True
@@ -238,6 +295,7 @@ class Player:
                         elif b.type == 'bouncy':
                             self.vy = -JUMP_FORCE * 1.35
                             self.is_grounded = False
+                            self.jumps_left = self.max_jumps
                             self.scale_x = 0.65
                             self.scale_y = 1.4
                             sounds.play('jump')
@@ -249,6 +307,8 @@ class Player:
                         self.y = b.rect.bottom
                         self.vy = 0
                         self.is_grounded = True
+                        self.jumps_left = self.max_jumps
+                        self.can_dash = True
                         self.coyote_timer = 0.10
                         if not was_grounded:
                             landed = True
@@ -266,11 +326,23 @@ class Player:
         self.scale_x += (1.0 - self.scale_x) * min(1.0, dt * 10.0)
         self.scale_y += (1.0 - self.scale_y) * min(1.0, dt * 10.0)
 
+        # Update ghost trails
+        for gt in self.ghost_trails:
+            gt['alpha'] -= dt * 650.0
+        self.ghost_trails = [gt for gt in self.ghost_trails if gt['alpha'] > 0]
+
         return jumped, landed
 
     def draw(self, surface, cam_offset):
         if self.is_dead:
             return
+
+        # Draw Ghost Trails
+        for gt in self.ghost_trails:
+            g_surf = pygame.Surface((int(gt['w']), int(gt['h'])), pygame.SRCALPHA)
+            g_col = (*gt['color'], max(0, min(255, int(gt['alpha']))))
+            pygame.draw.rect(g_surf, g_col, pygame.Rect(0, 0, int(gt['w']), int(gt['h'])), border_radius=4)
+            surface.blit(g_surf, (int(gt['x'] + cam_offset[0]), int(gt['y'] + cam_offset[1])))
 
         cx = self.x + self.w / 2.0 + cam_offset[0]
         cy = self.y + self.h / 2.0 + cam_offset[1]
@@ -278,9 +350,10 @@ class Player:
         hh = (self.h / 2.0) * self.scale_y
 
         body_rect = pygame.Rect(int(cx - hw), int(cy - hh), int(hw * 2), int(hh * 2))
-        # Cute Yellow Body
-        pygame.draw.rect(surface, (250, 204, 21), body_rect, border_radius=4)
-        pygame.draw.rect(surface, (217, 165, 12), body_rect, width=2, border_radius=4)
+        body_col = (100, 240, 255) if self.is_dashing else (250, 204, 21)
+        border_col = (30, 160, 220) if self.is_dashing else (217, 165, 12)
+        pygame.draw.rect(surface, body_col, body_rect, border_radius=4)
+        pygame.draw.rect(surface, border_col, body_rect, width=2, border_radius=4)
 
         # Eyes
         eye_ox = cx + (4 * self.facing_dir)
@@ -747,6 +820,7 @@ class Game:
             dt = min(0.05, self.clock.tick(FPS) / 1000.0)
             jump_pressed = False
             jump_released = False
+            dash_pressed = False
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -754,6 +828,8 @@ class Game:
                 elif event.type == pygame.KEYDOWN:
                     if event.key in (pygame.K_SPACE, pygame.K_w, pygame.K_UP):
                         jump_pressed = True
+                    elif event.key in (pygame.K_LSHIFT, pygame.K_RSHIFT, pygame.K_j):
+                        dash_pressed = True
                     elif event.key == pygame.K_r:
                         self.restart_level()
                     elif event.key == pygame.K_h:
@@ -789,7 +865,7 @@ class Game:
             if not self.show_level_select:
                 # Update player
                 jumped, landed = self.player.update(
-                    dt, in_left, in_right, jump_pressed, jump_released, self.blocks, self.sounds
+                    dt, in_left, in_right, jump_pressed, jump_released, dash_pressed, self.blocks, self.sounds
                 )
 
                 # Camera shake
@@ -860,8 +936,8 @@ class Game:
             d_surf = self.title_font.render(f"💀 {self.deaths_count}", True, (255, 100, 100))
             self.screen.blit(d_surf, (VIEW_W - 240, 12))
 
-            help_surf = self.font.render("[R]estart  [H]int  [L]evels  [M]ute", True, (180, 180, 200))
-            self.screen.blit(help_surf, (VIEW_W - 280, 32))
+            help_surf = self.font.render("[Shift/J] Dash  [R]estart  [H]int  [L]evels", True, (180, 180, 200))
+            self.screen.blit(help_surf, (VIEW_W - 320, 32))
 
             if self.show_hint:
                 hint_str = self.lvl.get('hint', self.lvl.get('initialHint', 'No hint.'))

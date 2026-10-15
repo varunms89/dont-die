@@ -6,6 +6,8 @@ var troll_sfx: AudioStream
 var trap_sfx: AudioStream
 var door_sfx: AudioStream
 var win_sfx: AudioStream
+var dash_sfx: AudioStream
+var double_jump_sfx: AudioStream
 
 var is_muted: bool = false
 var audio_players: Array[AudioStreamPlayer] = []
@@ -26,6 +28,10 @@ func _ready() -> void:
 		door_sfx = load("res://audio/door.wav")
 	if ResourceLoader.exists("res://audio/win.wav"):
 		win_sfx = load("res://audio/win.wav")
+	if ResourceLoader.exists("res://audio/dash.wav"):
+		dash_sfx = load("res://audio/dash.wav")
+	if ResourceLoader.exists("res://audio/double_jump.wav"):
+		double_jump_sfx = load("res://audio/double_jump.wav")
 
 	for i in range(max_players):
 		var p = AudioStreamPlayer.new()
@@ -41,7 +47,6 @@ func play_sfx(stream: AudioStream, volume_db: float = 0.0) -> void:
 			p.volume_db = volume_db
 			p.play()
 			return
-	# If all busy, use the first one
 	if audio_players.size() > 0:
 		var p = audio_players[0]
 		p.stream = stream
@@ -50,6 +55,12 @@ func play_sfx(stream: AudioStream, volume_db: float = 0.0) -> void:
 
 func play_jump() -> void:
 	play_sfx(jump_sfx, -3.0)
+
+func play_double_jump() -> void:
+	play_sfx(double_jump_sfx, -2.5)
+
+func play_dash() -> void:
+	play_sfx(dash_sfx, -2.0)
 
 func play_death() -> void:
 	play_sfx(death_sfx, 0.0)

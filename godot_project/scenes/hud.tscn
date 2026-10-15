@@ -127,6 +127,10 @@ action = "move_left"
 position = Vector2(110, 340)
 action = "move_right"
 
+[node name="BtnDash" type="TouchScreenButton" parent="MobileControls"]
+position = Vector2(610, 340)
+action = "dash"
+
 [node name="BtnJump" type="TouchScreenButton" parent="MobileControls"]
 position = Vector2(700, 340)
 action = "jump"
