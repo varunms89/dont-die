@@ -1,0 +1,73 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/intro.gd" id="1_intro"]
+
+[node name="Intro" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_intro")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = 25.0
+offset_right = -30.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 46
+text = "DON'T DIE"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.7, 0.95, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_font_sizes/font_size = 16
+text = "The Ultimate 256-Level Troll Puzzle Platformer"
+horizontal_alignment = 1
+
+[node name="HeroSpacer" type="Control" parent="VBox"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="PlayButton" type="Button" parent="VBox/ButtonContainer"]
+custom_minimum_size = Vector2(170, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "▶ START GAME"
+
+[node name="SelectButton" type="Button" parent="VBox/ButtonContainer"]
+custom_minimum_size = Vector2(170, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "☰ SELECT LEVEL"
+
+[node name="ControlsLabel" type="Label" parent="VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_font_sizes/font_size = 13
+text = "[A / D / ← →] Move    [W / Space / ↑] Jump / Double Jump    [Shift / J] Air Dash    [R] Quick Restart"
+horizontal_alignment = 1

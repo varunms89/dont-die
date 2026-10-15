@@ -416,7 +416,7 @@ class Block:
     def update(self, dt, player, sounds, cam):
         if self.shake_timer > 0:
             self.shake_timer -= dt
-            self.x = self.initial_x + random.uniform(-3, 3)
+            self.x = self.initial_x
             if self.shake_timer <= 0:
                 self.is_falling = True
                 self.x = self.initial_x

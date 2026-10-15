@@ -93,9 +93,9 @@ func _physics_process(delta: float) -> void:
 		input_left = input_right
 		input_right = temp
 
-	# Ground check based on gravity direction
+	# Ground check based on gravity direction (up_direction handles floor detection)
 	up_direction = Vector2.UP if gravity_dir == 1 else Vector2.DOWN
-	var currently_grounded: bool = is_on_floor() if gravity_dir == 1 else is_on_ceiling()
+	var currently_grounded: bool = is_on_floor()
 
 	if currently_grounded:
 		coyote_timer = 0.10
@@ -206,6 +206,23 @@ func _physics_process(delta: float) -> void:
 
 	# Execute Physics Move
 	move_and_slide()
+
+	# Process Slide Collisions (crumble, bounce, ice, reveal)
+	var on_ice_surface: bool = false
+	for i in range(get_slide_collision_count()):
+		var col = get_slide_collision(i)
+		var collider = col.get_collider()
+		if collider:
+			if collider.has_method("reveal"):
+				collider.reveal()
+			if collider.get("block_type") == "ice":
+				on_ice_surface = true
+			if col.get_normal().dot(up_direction) > 0.65:
+				if collider.has_method("trigger_crumble"):
+					collider.trigger_crumble()
+				if collider.get("block_type") == "bouncy":
+					apply_bounce(1.42)
+	is_on_ice = on_ice_surface
 
 	# Update Ghost Trails
 	for i in range(ghost_trails.size() - 1, -1, -1):

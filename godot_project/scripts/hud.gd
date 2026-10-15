@@ -3,6 +3,7 @@ extends CanvasLayer
 signal restart_requested()
 signal level_selected(level_index: int)
 signal mute_toggled()
+signal menu_requested()
 
 @onready var title_label: Label = $TopBar/TitleLabel
 @onready var deaths_label: Label = $TopBar/DeathsLabel
@@ -10,6 +11,7 @@ signal mute_toggled()
 @onready var hint_banner: PanelContainer = $HintBanner
 @onready var level_select_modal: PanelContainer = $LevelSelectModal
 @onready var level_grid: GridContainer = $LevelSelectModal/VBox/Scroll/LevelGrid
+@onready var menu_button: Button = $TopBar/RightButtons/MenuButton
 @onready var restart_button: Button = $TopBar/RightButtons/RestartButton
 @onready var hint_button: Button = $TopBar/RightButtons/HintButton
 @onready var levels_button: Button = $TopBar/RightButtons/LevelsButton
@@ -23,6 +25,8 @@ signal mute_toggled()
 var current_hint_text: String = ""
 
 func _ready() -> void:
+	if menu_button:
+		menu_button.pressed.connect(_on_menu_pressed)
 	if restart_button:
 		restart_button.pressed.connect(_on_restart_pressed)
 	if hint_button:
@@ -82,6 +86,9 @@ func _on_select_level(idx: int) -> void:
 	if level_select_modal:
 		level_select_modal.visible = false
 	emit_signal("level_selected", idx)
+
+func _on_menu_pressed() -> void:
+	emit_signal("menu_requested")
 
 func _on_mute_pressed() -> void:
 	var muted = AudioManager.toggle_mute()

@@ -66,13 +66,13 @@ func reset_block() -> void:
 	queue_redraw()
 
 func _physics_process(delta: float) -> void:
-	# Shake timer before falling
+	# Timer before falling (no screen shake or block jitter)
 	if shake_timer > 0.0:
 		shake_timer -= delta
-		position.x = initial_pos.x + randf_range(-3.0, 3.0)
+		position.x = initial_pos.x
+		queue_redraw()
 		if shake_timer <= 0.0:
 			is_falling = true
-			position.x = initial_pos.x
 			emit_signal("crumbled", self)
 
 	# Falling motion
@@ -113,10 +113,13 @@ func _draw() -> void:
 		draw_line(Vector2(0, 2), Vector2(block_size.x, 2), Color(0.8, 0.95, 1.0), 2.5)
 	elif block_type == "crumble":
 		# Orange crumbling stone
-		var crumb_col = Color(0.7, 0.35, 0.1) if shake_timer <= 0.0 else Color(0.9, 0.5, 0.2)
+		var crumb_col = Color(0.7, 0.35, 0.1) if shake_timer <= 0.0 else Color(0.95, 0.55, 0.2)
 		draw_rect(rect, crumb_col, true)
 		draw_rect(rect, Color(1.0, 0.6, 0.2), false, 1.5)
 		draw_line(Vector2(block_size.x * 0.3, 0), Vector2(block_size.x * 0.45, block_size.y * 0.7), Color(0.2, 0.1, 0.05), 1.5)
+		if shake_timer > 0.0:
+			draw_line(Vector2(block_size.x * 0.6, 0), Vector2(block_size.x * 0.5, block_size.y * 0.85), Color(0.15, 0.08, 0.03), 1.5)
+			draw_line(Vector2(block_size.x * 0.1, block_size.y * 0.3), Vector2(block_size.x * 0.35, block_size.y * 0.75), Color(0.15, 0.08, 0.03), 1.5)
 	else:
 		# Standard Solid / Fake Block
 		draw_rect(rect, color_base, true)

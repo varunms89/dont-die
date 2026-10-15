@@ -11,6 +11,8 @@ const TrollManagerClass = preload("res://scripts/troll_manager.gd")
 @onready var camera: Camera2D = $Camera2D
 @onready var level_container: Node2D = $LevelContainer
 @onready var background_rect: ColorRect = $BackgroundRect
+@onready var intro_layer: CanvasLayer = $IntroLayer
+@onready var intro: Control = $IntroLayer/Intro
 
 var levels_data: Array = []
 var current_level_index: int = 0
@@ -31,8 +33,44 @@ func _ready() -> void:
 	if hud:
 		hud.connect("restart_requested", Callable(self, "restart_level"))
 		hud.connect("level_selected", Callable(self, "load_level"))
+		hud.connect("menu_requested", Callable(self, "show_intro"))
+
+	if intro:
+		intro.connect("play_pressed", Callable(self, "_on_intro_play"))
+		intro.connect("level_select_pressed", Callable(self, "_on_intro_level_select"))
 
 	load_level(0)
+	show_intro()
+
+func show_intro() -> void:
+	if intro_layer:
+		intro_layer.visible = true
+	if hud:
+		hud.visible = false
+	if player:
+		player.visible = false
+		player.set_physics_process(false)
+
+func _on_intro_play() -> void:
+	if intro_layer:
+		intro_layer.visible = false
+	if hud:
+		hud.visible = true
+	if player:
+		player.visible = true
+		player.set_physics_process(true)
+		restart_level()
+
+func _on_intro_level_select() -> void:
+	if intro_layer:
+		intro_layer.visible = false
+	if hud:
+		hud.visible = true
+	if player:
+		player.visible = true
+		player.set_physics_process(true)
+	if hud.has_node("LevelSelectModal"):
+		hud.get_node("LevelSelectModal").visible = true
 
 func load_all_levels() -> void:
 	var path: String = "res://data/levels.json"
@@ -51,6 +89,14 @@ func load_all_levels() -> void:
 func load_level(index: int) -> void:
 	if levels_data.is_empty():
 		return
+
+	if intro_layer:
+		intro_layer.visible = false
+	if hud:
+		hud.visible = true
+	if player:
+		player.visible = true
+		player.set_physics_process(true)
 
 	current_level_index = clamp(index, 0, levels_data.size() - 1)
 	var lvl_data: Dictionary = levels_data[current_level_index]

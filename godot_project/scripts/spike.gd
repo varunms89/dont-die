@@ -40,6 +40,8 @@ func pop_up(speed: float = -350.0) -> void:
 	visible = true
 	is_moving = true
 	velocity_y = speed
+	for body in get_overlapping_bodies():
+		_on_body_entered(body)
 
 func reset_spike() -> void:
 	position = initial_pos
