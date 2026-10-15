@@ -45,6 +45,12 @@ func _ready() -> void:
 func show_intro() -> void:
 	if intro_layer:
 		intro_layer.visible = true
+	if intro:
+		if intro.has_method("show_intro_screen"):
+			intro.show_intro_screen()
+		else:
+			intro.visible = true
+			intro.set_process(true)
 	if hud:
 		hud.visible = false
 	if player:
@@ -54,6 +60,12 @@ func show_intro() -> void:
 func _on_intro_play() -> void:
 	if intro_layer:
 		intro_layer.visible = false
+	if intro:
+		if intro.has_method("hide_intro"):
+			intro.hide_intro()
+		else:
+			intro.visible = false
+			intro.set_process(false)
 	if hud:
 		hud.visible = true
 	if player:
@@ -64,6 +76,12 @@ func _on_intro_play() -> void:
 func _on_intro_level_select() -> void:
 	if intro_layer:
 		intro_layer.visible = false
+	if intro:
+		if intro.has_method("hide_intro"):
+			intro.hide_intro()
+		else:
+			intro.visible = false
+			intro.set_process(false)
 	if hud:
 		hud.visible = true
 	if player:
@@ -92,6 +110,12 @@ func load_level(index: int) -> void:
 
 	if intro_layer:
 		intro_layer.visible = false
+	if intro:
+		if intro.has_method("hide_intro"):
+			intro.hide_intro()
+		else:
+			intro.visible = false
+			intro.set_process(false)
 	if hud:
 		hud.visible = true
 	if player:
@@ -242,8 +266,12 @@ func spawn_floating_text(text: String, pos: Vector2, color: Color) -> void:
 	add_child(ft)
 
 func _physics_process(_delta: float) -> void:
-	# Quick restart hotkey
-	if Input.is_action_just_pressed("restart") or Input.is_key_pressed(KEY_R):
+	# Don't run game logic or hotkeys while intro is shown
+	if intro_layer and intro_layer.visible:
+		return
+
+	# Quick restart hotkey (only on single keypress, never repeatedly while held)
+	if Input.is_action_just_pressed("restart"):
 		restart_level()
 
 	# Process troll manager

@@ -80,12 +80,12 @@ func _physics_process(delta: float) -> void:
 			is_blinking = true
 			blink_timer = 0.12
 
-	# Input handling
-	var input_left: bool = Input.is_action_pressed("move_left") or Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT)
-	var input_right: bool = Input.is_action_pressed("move_right") or Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT)
-	var jump_just_pressed: bool = Input.is_action_just_pressed("jump") or Input.is_key_pressed(KEY_SPACE) or Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP)
+	# Input handling (mapped to project actions)
+	var input_left: bool = Input.is_action_pressed("move_left")
+	var input_right: bool = Input.is_action_pressed("move_right")
+	var jump_just_pressed: bool = Input.is_action_just_pressed("jump")
 	var jump_released: bool = Input.is_action_just_released("jump")
-	var dash_just_pressed: bool = Input.is_action_just_pressed("dash") or Input.is_key_pressed(KEY_SHIFT) or Input.is_key_pressed(KEY_J)
+	var dash_just_pressed: bool = Input.is_action_just_pressed("dash")
 
 	# Troll: Inverted Controls
 	if inverted_controls:

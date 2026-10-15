@@ -22,7 +22,19 @@ func _ready() -> void:
 	if select_btn:
 		select_btn.pressed.connect(_on_select_pressed)
 
+func show_intro_screen() -> void:
+	visible = true
+	set_process(true)
+	queue_redraw()
+
+func hide_intro() -> void:
+	visible = false
+	set_process(false)
+
 func _process(delta: float) -> void:
+	if not is_visible_in_tree() or not visible:
+		return
+
 	anim_time += delta
 
 	# Animated Title Bobbing & Glow
@@ -47,21 +59,23 @@ func _process(delta: float) -> void:
 	# Blinking
 	hero_blinking = (fmod(anim_time, 3.0) < 0.15)
 
-	# Keyboard shortcuts to start
-	if visible and (Input.is_action_just_pressed("jump") or Input.is_key_pressed(KEY_ENTER) or Input.is_key_pressed(KEY_SPACE)):
+	# Keyboard shortcuts to start (only active while intro is shown)
+	if is_visible_in_tree() and visible and (Input.is_action_just_pressed("jump") or Input.is_key_pressed(KEY_ENTER)):
 		_on_play_pressed()
 
 	queue_redraw()
 
 func _on_play_pressed() -> void:
+	hide_intro()
 	AudioManager.play_door()
 	emit_signal("play_pressed")
 
 func _on_select_pressed() -> void:
+	hide_intro()
 	emit_signal("level_select_pressed")
 
 func _draw() -> void:
-	if not visible:
+	if not is_visible_in_tree() or not visible:
 		return
 
 	# Draw animated floating decorative particles
