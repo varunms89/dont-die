@@ -7,12 +7,14 @@ const PLAYER_SCENE = preload("res://scenes/player.tscn")
 const FLOATING_TEXT_SCENE = preload("res://scenes/floating_text.tscn")
 const TrollManagerClass = preload("res://scripts/troll_manager.gd")
 
-@onready var hud: CanvasLayer = $HUD
-@onready var camera: Camera2D = $Camera2D
-@onready var level_container: Node2D = $LevelContainer
-@onready var background_rect: ColorRect = $BackgroundRect
-@onready var intro_layer: CanvasLayer = $IntroLayer
-@onready var intro: Control = $IntroLayer/Intro
+const INTRO_SCENE = preload("res://scenes/intro.tscn")
+
+@onready var hud: CanvasLayer = get_node_or_null("HUD")
+@onready var camera: Camera2D = get_node_or_null("Camera2D")
+@onready var level_container: Node2D = get_node_or_null("LevelContainer")
+@onready var background_rect: ColorRect = get_node_or_null("BackgroundRect")
+@onready var intro_layer: CanvasLayer = get_node_or_null("IntroLayer")
+@onready var intro: Control = get_node_or_null("IntroLayer/Intro")
 
 var levels_data: Array = []
 var current_level_index: int = 0
@@ -28,6 +30,15 @@ var troll_manager = TrollManagerClass.new()
 var just_jumped_this_frame: bool = false
 
 func _ready() -> void:
+	if intro_layer == null:
+		intro_layer = CanvasLayer.new()
+		intro_layer.name = "IntroLayer"
+		intro_layer.layer = 5
+		add_child(intro_layer)
+		intro = INTRO_SCENE.instantiate()
+		intro.name = "Intro"
+		intro_layer.add_child(intro)
+
 	load_all_levels()
 
 	if hud:
