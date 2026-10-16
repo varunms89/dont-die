@@ -137,6 +137,12 @@ func execute_action(trigger: Dictionary) -> void:
 				AudioManager.play_troll()
 				var msg: String = str(params.get("message", "CONTROLS INVERTED! 🔄"))
 				spawn_floating_text(msg, player.position + Vector2(0, -30), Color(0.98, 0.55, 0.15))
+				var dur: float = float(params.get("duration", 0.0))
+				if dur > 0.0 and main_node:
+					main_node.get_tree().create_timer(dur).timeout.connect(func():
+						if player != null and not bool(player.get("is_dead")):
+							player.set("inverted_controls", false)
+					)
 
 		"fake_door_reveal":
 			if door != null:

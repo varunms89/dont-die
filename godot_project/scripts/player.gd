@@ -38,10 +38,12 @@ var is_blinking: bool = false
 # Troll modifiers & state
 var gravity_dir: int = 1 # 1 = down, -1 = up
 var inverted_controls: bool = false
+var level_ice_physics: bool = false
 var is_on_ice: bool = false
 var is_dead: bool = false
 var facing_dir: int = 1 # 1 = right, -1 = left
 var was_grounded_last_frame: bool = false
+var bounce_cooldown: float = 0.0
 
 # Visual squash & stretch
 var squash_scale: Vector2 = Vector2.ONE
@@ -69,6 +71,8 @@ func _physics_process(delta: float) -> void:
 		jump_buffer_timer -= delta
 	if dash_cooldown > 0.0:
 		dash_cooldown -= delta
+	if bounce_cooldown > 0.0:
+		bounce_cooldown -= delta
 
 	# Blinking timer
 	blink_timer -= delta
@@ -135,6 +139,10 @@ func _physics_process(delta: float) -> void:
 				"alpha": 0.8,
 				"color": Color(0.2, 0.85, 1.0) # Neon cyan trail
 			})
+
+		if is_on_wall():
+			is_dashing = false
+			velocity.x = 0.0
 
 		if dash_timer <= 0.0:
 			is_dashing = false
@@ -222,7 +230,7 @@ func _physics_process(delta: float) -> void:
 					collider.trigger_crumble()
 				if collider.get("block_type") == "bouncy":
 					apply_bounce(1.42)
-	is_on_ice = on_ice_surface
+	is_on_ice = level_ice_physics or on_ice_surface
 
 	# Update Ghost Trails
 	for i in range(ghost_trails.size() - 1, -1, -1):
@@ -238,6 +246,9 @@ func _physics_process(delta: float) -> void:
 	queue_redraw()
 
 func apply_bounce(multiplier: float = 1.35) -> void:
+	if bounce_cooldown > 0.0:
+		return
+	bounce_cooldown = 0.2
 	velocity.y = -JUMP_FORCE * multiplier * gravity_dir
 	squash_scale = Vector2(0.65, 1.4)
 	coyote_timer = 0.0
@@ -256,18 +267,20 @@ func kill(reason: String = "") -> void:
 	emit_signal("died")
 	queue_redraw()
 
-func respawn(start_pos: Vector2, p_gravity_dir: int = 1) -> void:
+func respawn(start_pos: Vector2, p_gravity_dir: int = 1, p_is_ice: bool = false) -> void:
 	position = start_pos
 	velocity = Vector2.ZERO
 	is_dead = false
 	is_dashing = false
 	can_dash = true
 	dash_cooldown = 0.0
+	bounce_cooldown = 0.0
 	max_jumps = 2
 	jumps_left = max_jumps
 	gravity_dir = p_gravity_dir
 	inverted_controls = false
-	is_on_ice = false
+	level_ice_physics = p_is_ice
+	is_on_ice = p_is_ice
 	squash_scale = Vector2.ONE
 	shocked_timer = 0.0
 	coyote_timer = 0.0

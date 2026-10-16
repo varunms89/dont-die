@@ -6,8 +6,8 @@ const DOOR_SCENE = preload("res://scenes/door.tscn")
 const PLAYER_SCENE = preload("res://scenes/player.tscn")
 const FLOATING_TEXT_SCENE = preload("res://scenes/floating_text.tscn")
 const TrollManagerClass = preload("res://scripts/troll_manager.gd")
-
 const INTRO_SCENE = preload("res://scenes/intro.tscn")
+const DARKNESS_SHADER = preload("res://shaders/darkness.gdshader")
 
 @onready var hud: CanvasLayer = get_node_or_null("HUD")
 @onready var camera: Camera2D = get_node_or_null("Camera2D")
@@ -28,6 +28,9 @@ var current_spikes: Array = []
 var troll_manager = TrollManagerClass.new()
 
 var just_jumped_this_frame: bool = false
+var darkness_rect: ColorRect
+var darkness_material: ShaderMaterial
+var is_dark_room: bool = false
 
 func _ready() -> void:
 	if intro_layer == null:
@@ -38,6 +41,17 @@ func _ready() -> void:
 		intro = INTRO_SCENE.instantiate()
 		intro.name = "Intro"
 		intro_layer.add_child(intro)
+
+	darkness_material = ShaderMaterial.new()
+	darkness_material.shader = DARKNESS_SHADER
+	darkness_rect = ColorRect.new()
+	darkness_rect.name = "DarknessOverlay"
+	darkness_rect.size = Vector2(800, 450)
+	darkness_rect.material = darkness_material
+	darkness_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	darkness_rect.z_index = 10
+	darkness_rect.visible = false
+	add_child(darkness_rect)
 
 	load_all_levels()
 
@@ -54,6 +68,8 @@ func _ready() -> void:
 	show_intro()
 
 func show_intro() -> void:
+	if darkness_rect:
+		darkness_rect.visible = false
 	if intro_layer:
 		intro_layer.visible = true
 	if intro:
@@ -83,6 +99,8 @@ func _on_intro_play() -> void:
 		player.visible = true
 		player.set_physics_process(true)
 		restart_level()
+	if darkness_rect:
+		darkness_rect.visible = is_dark_room
 
 func _on_intro_level_select() -> void:
 	if intro_layer:
@@ -98,6 +116,8 @@ func _on_intro_level_select() -> void:
 	if player:
 		player.visible = true
 		player.set_physics_process(true)
+	if darkness_rect:
+		darkness_rect.visible = is_dark_room
 	if hud.has_node("LevelSelectModal"):
 		hud.get_node("LevelSelectModal").visible = true
 
@@ -135,6 +155,10 @@ func load_level(index: int) -> void:
 
 	current_level_index = clamp(index, 0, levels_data.size() - 1)
 	var lvl_data: Dictionary = levels_data[current_level_index]
+
+	is_dark_room = bool(lvl_data.get("darkRoom", false))
+	if darkness_rect:
+		darkness_rect.visible = is_dark_room
 
 	# Clear previous level nodes
 	for child in level_container.get_children():
@@ -193,14 +217,15 @@ func load_level(index: int) -> void:
 	var start_pos = Vector2(float(start_pos_info.get("x", 80)), float(start_pos_info.get("y", 350)))
 	var grav_dir: int = int(lvl_data.get("gravityDirection", 1))
 
+	var is_ice: bool = bool(lvl_data.get("icePhysics", false))
 	if player == null:
 		player = PLAYER_SCENE.instantiate()
 		add_child(player)
 		player.connect("died", Callable(self, "_on_player_died"))
 		player.connect("jumped", Callable(self, "_on_player_jumped"))
 
-	player.call("respawn", start_pos, grav_dir)
-	player.set("is_on_ice", bool(lvl_data.get("icePhysics", false)))
+	player.set_physics_process(true)
+	player.call("respawn", start_pos, grav_dir, is_ice)
 
 	# 5. Initialize Troll Manager
 	var triggers = lvl_data.get("triggers", [])
@@ -215,6 +240,9 @@ func load_level(index: int) -> void:
 
 func _on_player_jumped() -> void:
 	just_jumped_this_frame = true
+	for s in current_spikes:
+		if bool(s.get("jumps_with_player")) and s.has_method("jump"):
+			s.jump()
 
 func restart_level() -> void:
 	if levels_data.is_empty():
@@ -224,10 +252,11 @@ func restart_level() -> void:
 	var start_pos_info = lvl_data.get("playerStart", { "x": 80, "y": 350 })
 	var start_pos = Vector2(float(start_pos_info.get("x", 80)), float(start_pos_info.get("y", 350)))
 	var grav_dir: int = int(lvl_data.get("gravityDirection", 1))
+	var is_ice: bool = bool(lvl_data.get("icePhysics", false))
 
 	if player:
-		player.call("respawn", start_pos, grav_dir)
-		player.set("is_on_ice", bool(lvl_data.get("icePhysics", false)))
+		player.set_physics_process(true)
+		player.call("respawn", start_pos, grav_dir, is_ice)
 
 	if current_door:
 		current_door.call("reset_door")
@@ -237,6 +266,9 @@ func restart_level() -> void:
 
 	for s in current_spikes:
 		s.call("reset_spike")
+
+	if darkness_rect:
+		darkness_rect.visible = is_dark_room
 
 	troll_manager.reset()
 	is_transitioning = false
@@ -258,6 +290,9 @@ func _on_level_cleared() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
+	if player:
+		player.set_physics_process(false)
+		player.velocity = Vector2.ZERO
 	spawn_floating_text("LEVEL CLEAR! 🎉", current_door.position + Vector2(0, -30), Color(0.2, 0.95, 0.4))
 	await get_tree().create_timer(0.65).timeout
 
@@ -296,3 +331,7 @@ func _physics_process(_delta: float) -> void:
 	if player and not bool(player.get("is_dead")):
 		if player.position.y > 520.0 or player.position.y < -150.0:
 			player.call("kill", "Fell into the void!")
+
+	# Update darkness spotlight center
+	if is_dark_room and darkness_rect and darkness_rect.visible and player:
+		darkness_material.set_shader_parameter("player_pos", player.position + Vector2(12, 13))

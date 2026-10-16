@@ -25,21 +25,21 @@ func setup_spike() -> void:
 		var inset_y: float = spike_size.y * 0.2
 		var fair_w: float = spike_size.x - (inset_x * 2.0)
 		var fair_h: float = spike_size.y - (inset_y * 1.5)
-		(collision_shape.shape as RectangleShape2D).size = Vector2(fair_w, fair_h)
-		collision_shape.position = Vector2(spike_size.x / 2.0, (spike_size.y / 2.0) + (inset_y * 0.5 if direction == "up" else 0.0))
+		var y_off = (inset_y * 0.5) if direction == "up" else (-(inset_y * 0.5) if direction == "down" else 0.0)
+		collision_shape.position = Vector2(spike_size.x / 2.0, (spike_size.y / 2.0) + y_off)
 
 	visible = not is_hidden
 	queue_redraw()
 
 func jump(force: float = 480.0) -> void:
 	is_moving = true
-	velocity_y = -force
+	velocity_y = -force if direction == "up" else force
 
 func pop_up(speed: float = -350.0) -> void:
 	is_hidden = false
 	visible = true
 	is_moving = true
-	velocity_y = speed
+	velocity_y = speed if direction == "up" else -speed
 	for body in get_overlapping_bodies():
 		_on_body_entered(body)
 
@@ -52,11 +52,15 @@ func reset_spike() -> void:
 
 func _physics_process(delta: float) -> void:
 	if is_moving:
-		velocity_y += 1100.0 * delta
+		velocity_y += (1100.0 if direction == "up" else -1100.0) * delta
 		position.y += velocity_y * delta
 
-		# Return to initial ground when falling down
+		# Return to initial ground when falling down (floor) or returning up (ceiling)
 		if direction == "up" and position.y >= initial_pos.y:
+			position.y = initial_pos.y
+			velocity_y = 0.0
+			is_moving = false
+		elif direction == "down" and position.y <= initial_pos.y:
 			position.y = initial_pos.y
 			velocity_y = 0.0
 			is_moving = false

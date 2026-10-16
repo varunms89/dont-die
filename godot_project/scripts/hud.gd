@@ -66,7 +66,7 @@ func populate_level_grid(total_levels: int) -> void:
 		var btn = Button.new()
 		btn.text = str(i)
 		btn.custom_minimum_size = Vector2(44, 36)
-		btn.pressed.connect(func(): _on_select_level(i - 1))
+		btn.pressed.connect(_on_select_level.bind(i - 1))
 		level_grid.add_child(btn)
 
 func _on_restart_pressed() -> void:

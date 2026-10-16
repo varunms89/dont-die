@@ -80,8 +80,8 @@ func _physics_process(delta: float) -> void:
 		fall_velocity_y += 1200.0 * delta
 		position.y += fall_velocity_y * delta
 
-		# Check if falling block squishes the player
-		if fall_velocity_y > 100.0:
+		# Check if falling ceiling squishes the player (not crumble floors)
+		if fall_velocity_y > 100.0 and block_type != "crumble":
 			var space_state = get_world_2d().direct_space_state
 			var query = PhysicsShapeQueryParameters2D.new()
 			var rect_shape = RectangleShape2D.new()
@@ -93,7 +93,9 @@ func _physics_process(delta: float) -> void:
 			for res in results:
 				var collider = res.collider
 				if collider.has_method("kill") and not collider.get("is_dead"):
-					collider.kill("Squashed by falling ceiling!")
+					# Only crush if the block started above the player
+					if initial_pos.y < collider.position.y:
+						collider.kill("Squashed by falling ceiling!")
 
 func _draw() -> void:
 	if block_type == "invisible" and not is_revealed:
@@ -120,8 +122,17 @@ func _draw() -> void:
 		if shake_timer > 0.0:
 			draw_line(Vector2(block_size.x * 0.6, 0), Vector2(block_size.x * 0.5, block_size.y * 0.85), Color(0.15, 0.08, 0.03), 1.5)
 			draw_line(Vector2(block_size.x * 0.1, block_size.y * 0.3), Vector2(block_size.x * 0.35, block_size.y * 0.75), Color(0.15, 0.08, 0.03), 1.5)
+	elif block_type == "fake":
+		# Fake block: subtle transparency shimmer
+		var shimmer_a: float = 0.85 + sin(Time.get_ticks_msec() * 0.005) * 0.08
+		var fake_base = Color(color_base.r, color_base.g, color_base.b, shimmer_a)
+		var fake_top = Color(color_top.r, color_top.g, color_top.b, shimmer_a)
+		draw_rect(rect, fake_base, true)
+		draw_rect(rect, fake_top, false, 1.0)
+		if block_size.y > 6.0:
+			draw_rect(Rect2(Vector2.ZERO, Vector2(block_size.x, 4.0)), fake_top, true)
 	else:
-		# Standard Solid / Fake Block
+		# Standard Solid Block
 		draw_rect(rect, color_base, true)
 		draw_rect(rect, color_top, false, 1.0)
 		if block_size.y > 6.0:

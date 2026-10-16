@@ -33,6 +33,8 @@ func setup_door() -> void:
 		collision_shape.position = door_size / 2.0
 	queue_redraw()
 
+var fake_timer_id: int = 0
+
 func flee_to(target_x: float, speed: float = 380.0) -> void:
 	is_fleeing = true
 	target_pos_x = target_x
@@ -48,12 +50,18 @@ func launch_rocket(new_x: float, new_y: float) -> void:
 func reveal_fake(real_door_x: float, real_door_y: float) -> void:
 	is_fake = true
 	AudioManager.play_troll()
+	fake_timer_id += 1
+	var current_id = fake_timer_id
 	await get_tree().create_timer(0.8).timeout
-	position = Vector2(real_door_x, real_door_y)
-	is_fake = false
-	AudioManager.play_door()
+	if current_id == fake_timer_id:
+		position = Vector2(real_door_x, real_door_y)
+		is_fake = false
+		AudioManager.play_door()
+		for body in get_overlapping_bodies():
+			_on_body_entered(body)
 
 func reset_door() -> void:
+	fake_timer_id += 1
 	position = initial_pos
 	is_fake = false
 	is_fleeing = false
@@ -72,7 +80,10 @@ func _physics_process(delta: float) -> void:
 		if abs(dx) > 4.0:
 			position.x += sign(dx) * min(abs(dx), flee_speed * delta)
 		else:
+			position.x = target_pos_x
 			is_fleeing = false
+			for body in get_overlapping_bodies():
+				_on_body_entered(body)
 
 	# Rocket door motion
 	if is_rocket:
@@ -84,12 +95,19 @@ func _physics_process(delta: float) -> void:
 			position.y = rocket_target_pos.y
 			is_rocket = false
 			AudioManager.play_door()
+			for body in get_overlapping_bodies():
+				_on_body_entered(body)
+
+	# Ensure overlapping player triggers door win if not fleeing/fake
+	if not is_opened and not is_fake and not is_fleeing and not is_rocket:
+		for body in get_overlapping_bodies():
+			_on_body_entered(body)
 
 	queue_redraw()
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.has_method("kill") and not body.get("is_dead") and not is_opened:
-		if is_fake or is_fleeing:
+		if is_fake or is_fleeing or is_rocket:
 			return
 		is_opened = true
 		AudioManager.play_win()
