@@ -771,7 +771,7 @@ function generateProceduralLevel(id: number): LevelData {
   const doorFleeSpeed = Math.min(520, Math.round(220 + (id - 15) * 1.4));
   const isIce = (archetype === 5 || (id % 9 === 0 && id !== 256));
   const isDark = (archetype === 9 || (id % 13 === 0 && id !== 256));
-  const isGravityInverted = (archetype === 4 || (id % 17 === 0 && id !== 256));
+  const isGravityInverted = archetype === 4;
 
   const width = 800;
   const height = 450;

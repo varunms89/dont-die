@@ -1702,36 +1702,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b17_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b17_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b17_m1",
@@ -1844,7 +1844,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^16x Harder.",
@@ -4333,36 +4333,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b34_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b34_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b34_f1",
@@ -4440,7 +4440,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^33x Harder.",
@@ -6936,36 +6936,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b51_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b51_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b51_ice1",
@@ -7044,7 +7044,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": true,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^50x Harder.",
@@ -9541,36 +9541,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b68_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b68_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b68_cc1",
@@ -9714,7 +9714,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^67x Harder.",
@@ -12211,36 +12211,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b85_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b85_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b85_d_ground",
@@ -12336,7 +12336,7 @@
       }
     ],
     "triggers": [],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": true,
     "initialHint": "Difficulty escalated: 10^84x Harder.",
@@ -14862,36 +14862,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b102_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b102_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b102_ic_g1",
@@ -14976,7 +14976,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^101x Harder.",
@@ -17463,36 +17463,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b119_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b119_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b119_sk_drop",
@@ -17569,7 +17569,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^118x Harder.",
@@ -20066,36 +20066,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b136_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b136_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b136_c1",
@@ -20194,7 +20194,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^135x Harder.",
@@ -22707,36 +22707,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b153_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b153_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b153_p1",
@@ -22825,7 +22825,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": true,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^152x Harder.",
@@ -27907,36 +27907,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b187_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b187_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b187_fake1",
@@ -28033,7 +28033,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^186x Harder.",
@@ -30577,36 +30577,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b204_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b204_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b204_t1",
@@ -30703,7 +30703,7 @@
       }
     ],
     "triggers": [],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^203x Harder.",
@@ -33199,36 +33199,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b221_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b221_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b221_st_ground",
@@ -33354,7 +33354,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": true,
     "initialHint": "Difficulty escalated: 10^220x Harder.",
@@ -35839,36 +35839,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b238_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b238_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b238_rk_g",
@@ -35955,7 +35955,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^237x Harder.",
@@ -38432,36 +38432,36 @@
     "height": 450,
     "playerStart": {
       "x": 50,
-      "y": 100
+      "y": 350
     },
     "door": {
       "x": 730,
-      "y": 70,
+      "y": 336,
       "w": 32,
       "h": 44,
       "initialX": 730,
-      "initialY": 70
+      "initialY": 336
     },
     "blocks": [
       {
         "id": "b255_start",
         "type": "solid",
         "x": 0,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 0,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b255_end",
         "type": "solid",
         "x": 670,
-        "y": 0,
+        "y": 380,
         "w": 130,
         "h": 70,
         "initialX": 670,
-        "initialY": 0
+        "initialY": 380
       },
       {
         "id": "b255_mp1",
@@ -38558,7 +38558,7 @@
         }
       }
     ],
-    "gravityDirection": -1,
+    "gravityDirection": 1,
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^254x Harder.",
