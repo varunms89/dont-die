@@ -31,6 +31,8 @@ var just_jumped_this_frame: bool = false
 var darkness_rect: ColorRect
 var darkness_material: ShaderMaterial
 var is_dark_room: bool = false
+var death_timer_id: int = 0
+var transition_id: int = 0
 
 func _ready() -> void:
 	if intro_layer == null:
@@ -68,6 +70,9 @@ func _ready() -> void:
 	show_intro()
 
 func show_intro() -> void:
+	death_timer_id += 1
+	transition_id += 1
+	is_transitioning = false
 	if darkness_rect:
 		darkness_rect.visible = false
 	if intro_layer:
@@ -139,6 +144,9 @@ func load_level(index: int) -> void:
 	if levels_data.is_empty():
 		return
 
+	death_timer_id += 1
+	transition_id += 1
+
 	if intro_layer:
 		intro_layer.visible = false
 	if intro:
@@ -160,8 +168,9 @@ func load_level(index: int) -> void:
 	if darkness_rect:
 		darkness_rect.visible = is_dark_room
 
-	# Clear previous level nodes
+	# Clear previous level nodes cleanly from physics tree immediately
 	for child in level_container.get_children():
+		level_container.remove_child(child)
 		child.queue_free()
 	current_blocks.clear()
 	current_spikes.clear()
@@ -247,6 +256,10 @@ func _on_player_jumped() -> void:
 func restart_level() -> void:
 	if levels_data.is_empty():
 		return
+	if is_transitioning:
+		return
+
+	death_timer_id += 1
 
 	var lvl_data: Dictionary = levels_data[current_level_index]
 	var start_pos_info = lvl_data.get("playerStart", { "x": 80, "y": 350 })
@@ -282,19 +295,28 @@ func _on_player_died() -> void:
 	if hud and hud.has_method("update_hud"):
 		hud.update_hud(title, subtitle, deaths_count, hint)
 
+	death_timer_id += 1
+	var this_death_id = death_timer_id
 	# Auto-restart after short delay (0.32s)
 	await get_tree().create_timer(0.32).timeout
-	restart_level()
+	if this_death_id == death_timer_id and (intro_layer == null or not intro_layer.visible) and not is_transitioning:
+		restart_level()
 
 func _on_level_cleared() -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
+	death_timer_id += 1
+	transition_id += 1
+	var this_trans_id = transition_id
+
 	if player:
 		player.set_physics_process(false)
 		player.velocity = Vector2.ZERO
 	spawn_floating_text("LEVEL CLEAR! 🎉", current_door.position + Vector2(0, -30), Color(0.2, 0.95, 0.4))
 	await get_tree().create_timer(0.65).timeout
+	if this_trans_id != transition_id:
+		return
 
 	if current_level_index + 1 < levels_data.size():
 		load_level(current_level_index + 1)
@@ -312,12 +334,14 @@ func spawn_floating_text(text: String, pos: Vector2, color: Color) -> void:
 	add_child(ft)
 
 func _physics_process(_delta: float) -> void:
-	# Don't run game logic or hotkeys while intro is shown
+	# Don't run game logic or hotkeys while intro or modals are shown
 	if intro_layer and intro_layer.visible:
+		return
+	if hud and hud.has_node("LevelSelectModal") and hud.get_node("LevelSelectModal").visible:
 		return
 
 	# Quick restart hotkey (only on single keypress, never repeatedly while held)
-	if Input.is_action_just_pressed("restart"):
+	if Input.is_action_just_pressed("restart") and not is_transitioning:
 		restart_level()
 
 	# Process troll manager
@@ -334,4 +358,4 @@ func _physics_process(_delta: float) -> void:
 
 	# Update darkness spotlight center
 	if is_dark_room and darkness_rect and darkness_rect.visible and player:
-		darkness_material.set_shader_parameter("player_pos", player.position + Vector2(12, 13))
+		darkness_material.set_shader_parameter("player_pos", player.position)

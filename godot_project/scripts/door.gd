@@ -28,8 +28,10 @@ func _ready() -> void:
 	setup_door()
 
 func setup_door() -> void:
-	if collision_shape and collision_shape.shape is RectangleShape2D:
-		(collision_shape.shape as RectangleShape2D).size = door_size
+	if collision_shape:
+		var shape_inst = RectangleShape2D.new()
+		shape_inst.size = door_size
+		collision_shape.shape = shape_inst
 		collision_shape.position = door_size / 2.0
 	queue_redraw()
 

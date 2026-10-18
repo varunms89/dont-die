@@ -19,12 +19,14 @@ func _ready() -> void:
 	setup_spike()
 
 func setup_spike() -> void:
-	if collision_shape and collision_shape.shape is RectangleShape2D:
-		# Inset hitbox for fair platforming feel
+	if collision_shape:
 		var inset_x: float = spike_size.x * 0.2
 		var inset_y: float = spike_size.y * 0.2
 		var fair_w: float = spike_size.x - (inset_x * 2.0)
 		var fair_h: float = spike_size.y - (inset_y * 1.5)
+		var shape_inst = RectangleShape2D.new()
+		shape_inst.size = Vector2(fair_w, fair_h)
+		collision_shape.shape = shape_inst
 		var y_off = (inset_y * 0.5) if direction == "up" else (-(inset_y * 0.5) if direction == "down" else 0.0)
 		collision_shape.position = Vector2(spike_size.x / 2.0, (spike_size.y / 2.0) + y_off)
 
@@ -64,6 +66,9 @@ func _physics_process(delta: float) -> void:
 			position.y = initial_pos.y
 			velocity_y = 0.0
 			is_moving = false
+
+		for body in get_overlapping_bodies():
+			_on_body_entered(body)
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.has_method("kill") and not body.get("is_dead") and visible:

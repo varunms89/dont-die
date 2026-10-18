@@ -22,8 +22,10 @@ func _ready() -> void:
 	setup_block()
 
 func setup_block() -> void:
-	if collision_shape and collision_shape.shape is RectangleShape2D:
-		(collision_shape.shape as RectangleShape2D).size = block_size
+	if collision_shape:
+		var shape_inst = RectangleShape2D.new()
+		shape_inst.size = block_size
+		collision_shape.shape = shape_inst
 		collision_shape.position = block_size / 2.0
 
 	if block_type == "fake":

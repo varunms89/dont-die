@@ -95,3 +95,12 @@ func _on_mute_pressed() -> void:
 	if mute_button:
 		mute_button.text = "🔇" if muted else "🔊"
 	emit_signal("mute_toggled")
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		if level_select_modal and level_select_modal.visible:
+			level_select_modal.visible = false
+			get_viewport().set_input_as_handled()
+		elif hint_banner and hint_banner.visible:
+			hint_banner.visible = false
+			get_viewport().set_input_as_handled()
