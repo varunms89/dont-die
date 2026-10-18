@@ -560,6 +560,7 @@ class Door:
         self.x = self.initial_x
         self.y = self.initial_y
         self.is_fake = False
+        self.fake_timer = 0.0
         self.is_fleeing = False
         self.is_rocket = False
         self.rocket_vy = 0.0
@@ -574,8 +575,21 @@ class Door:
         self.rocket_vy = -700.0
         self.rocket_target = (new_x, new_y)
 
+    def reveal_fake(self, real_x, real_y):
+        self.is_fake = True
+        self.fake_timer = 0.8
+        self.real_door_pos = (real_x, real_y)
+
     def update(self, dt, sounds):
         self.pulse += dt * 6.0
+        if self.is_fake and hasattr(self, 'fake_timer') and self.fake_timer > 0:
+            self.fake_timer -= dt
+            if self.fake_timer <= 0:
+                self.x = self.real_door_pos[0]
+                self.y = self.real_door_pos[1]
+                self.is_fake = False
+                sounds.play('door')
+
         if self.is_fleeing:
             dx = self.target_x - self.x
             if abs(dx) > 4:
@@ -599,8 +613,13 @@ class Door:
         r = pygame.Rect(rx, ry, int(self.w), int(self.h))
 
         # Frame
-        pygame.draw.rect(surface, (250, 204, 21), r, width=3, border_radius=3)
+        frame_col = (255, 60, 60) if self.is_fake else (250, 204, 21)
+        pygame.draw.rect(surface, frame_col, r, width=3, border_radius=3)
         inner_r = pygame.Rect(rx + 3, ry + 3, int(self.w - 6), int(self.h - 6))
+
+        if self.is_fake:
+            pygame.draw.line(surface, (255, 60, 60), (rx + 4, ry + 4), (rx + self.w - 4, ry + self.h - 4), 3)
+            pygame.draw.line(surface, (255, 60, 60), (rx + self.w - 4, ry + 4), (rx + 4, ry + self.h - 4), 3)
 
         # Glowing swirl portal
         glow = 0.5 + 0.5 * math.sin(self.pulse)
@@ -793,9 +812,10 @@ class Game:
             self.spawn_floating_text("CONTROLS INVERTED! 🔄", self.player.x, self.player.y - 30, (255, 140, 40))
 
         elif act == 'fake_door_reveal':
-            self.door.is_fake = True
+            rx = p.get('realDoorX', self.door.x)
+            ry = p.get('realDoorY', self.door.y)
+            self.door.reveal_fake(rx, ry)
             self.sounds.play('troll')
-            self.camera.shake(10.0)
             self.spawn_floating_text("SIKE! 😂", self.door.x, self.door.y - 25, (255, 60, 60))
 
         elif act == 'rocket_door':

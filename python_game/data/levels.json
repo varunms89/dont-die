@@ -3614,6 +3614,16 @@
         "initialY": 380
       },
       {
+        "id": "b29_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b29_sk_high",
         "type": "solid",
         "x": 80,
@@ -3682,7 +3692,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^28x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 30,
@@ -5928,6 +5938,16 @@
         "initialY": 380
       },
       {
+        "id": "b44_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b44_sk_high",
         "type": "solid",
         "x": 80,
@@ -5996,7 +6016,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^43x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 45,
@@ -8242,6 +8262,16 @@
         "initialY": 380
       },
       {
+        "id": "b59_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b59_sk_high",
         "type": "solid",
         "x": 80,
@@ -8310,7 +8340,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^58x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 60,
@@ -10556,6 +10586,16 @@
         "initialY": 380
       },
       {
+        "id": "b74_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b74_sk_high",
         "type": "solid",
         "x": 80,
@@ -10624,7 +10664,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^73x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 75,
@@ -12870,6 +12910,16 @@
         "initialY": 380
       },
       {
+        "id": "b89_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b89_sk_high",
         "type": "solid",
         "x": 80,
@@ -12938,7 +12988,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^88x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 90,
@@ -15184,6 +15234,16 @@
         "initialY": 380
       },
       {
+        "id": "b104_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b104_sk_high",
         "type": "solid",
         "x": 80,
@@ -15252,7 +15312,7 @@
     "icePhysics": false,
     "darkRoom": true,
     "initialHint": "Difficulty escalated: 10^103x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 105,
@@ -17498,6 +17558,16 @@
         "initialY": 380
       },
       {
+        "id": "b119_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b119_sk_high",
         "type": "solid",
         "x": 80,
@@ -17566,7 +17636,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^118x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 120,
@@ -19812,6 +19882,16 @@
         "initialY": 380
       },
       {
+        "id": "b134_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b134_sk_high",
         "type": "solid",
         "x": 80,
@@ -19880,7 +19960,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^133x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 135,
@@ -22126,6 +22206,16 @@
         "initialY": 380
       },
       {
+        "id": "b149_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b149_sk_high",
         "type": "solid",
         "x": 80,
@@ -22194,7 +22284,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^148x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 150,
@@ -24440,6 +24530,16 @@
         "initialY": 380
       },
       {
+        "id": "b164_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b164_sk_high",
         "type": "solid",
         "x": 80,
@@ -24508,7 +24608,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^163x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 165,
@@ -26754,6 +26854,16 @@
         "initialY": 380
       },
       {
+        "id": "b179_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b179_sk_high",
         "type": "solid",
         "x": 80,
@@ -26822,7 +26932,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^178x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 180,
@@ -29068,6 +29178,16 @@
         "initialY": 380
       },
       {
+        "id": "b194_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b194_sk_high",
         "type": "solid",
         "x": 80,
@@ -29136,7 +29256,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^193x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 195,
@@ -31382,6 +31502,16 @@
         "initialY": 380
       },
       {
+        "id": "b209_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b209_sk_high",
         "type": "solid",
         "x": 80,
@@ -31450,7 +31580,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^208x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 210,
@@ -33696,6 +33826,16 @@
         "initialY": 380
       },
       {
+        "id": "b224_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b224_sk_high",
         "type": "solid",
         "x": 80,
@@ -33764,7 +33904,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^223x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 225,
@@ -36010,6 +36150,16 @@
         "initialY": 380
       },
       {
+        "id": "b239_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b239_sk_high",
         "type": "solid",
         "x": 80,
@@ -36078,7 +36228,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^238x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 240,
@@ -38324,6 +38474,16 @@
         "initialY": 380
       },
       {
+        "id": "b254_sk_step",
+        "type": "solid",
+        "x": 230,
+        "y": 295,
+        "w": 90,
+        "h": 25,
+        "initialX": 230,
+        "initialY": 295
+      },
+      {
         "id": "b254_sk_high",
         "type": "solid",
         "x": 80,
@@ -38392,7 +38552,7 @@
     "icePhysics": false,
     "darkRoom": false,
     "initialHint": "Difficulty escalated: 10^253x Harder.",
-    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you."
+    "hint": "Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up."
   },
   {
     "id": 255,

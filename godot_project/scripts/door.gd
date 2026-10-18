@@ -54,11 +54,13 @@ func reveal_fake(real_door_x: float, real_door_y: float) -> void:
 	AudioManager.play_troll()
 	fake_timer_id += 1
 	var current_id = fake_timer_id
+	queue_redraw()
 	await get_tree().create_timer(0.8).timeout
 	if current_id == fake_timer_id:
 		position = Vector2(real_door_x, real_door_y)
 		is_fake = false
 		AudioManager.play_door()
+		queue_redraw()
 		for body in get_overlapping_bodies():
 			_on_body_entered(body)
 
@@ -117,14 +119,19 @@ func _on_body_entered(body: Node2D) -> void:
 
 func _draw() -> void:
 	var rect: Rect2 = Rect2(Vector2.ZERO, door_size)
-	draw_rect(rect, frame_color, false, 3.0)
+	var f_col = Color(0.95, 0.2, 0.2) if is_fake else frame_color
+	draw_rect(rect, f_col, false, 3.0)
 
 	var inner_rect: Rect2 = Rect2(3.0, 3.0, door_size.x - 6.0, door_size.y - 6.0)
 	var glow_factor: float = 0.5 + 0.5 * sin(pulse_time * 6.0)
-	var portal_col: Color = portal_color_1.lerp(portal_color_2, glow_factor)
+	var portal_col: Color = (Color(0.8, 0.1, 0.1, 0.7) if is_fake else portal_color_1.lerp(portal_color_2, glow_factor))
 	draw_rect(inner_rect, portal_col, true)
 
 	var center: Vector2 = door_size / 2.0
 	var ring_r: float = (door_size.x * 0.3) * (0.8 + 0.2 * sin(pulse_time * 8.0))
 	draw_circle(center, ring_r, Color(1, 1, 1, 0.4))
 	draw_circle(center, ring_r * 0.5, Color(1, 1, 1, 0.7))
+
+	if is_fake:
+		draw_line(Vector2(6, 6), door_size - Vector2(6, 6), Color(1, 0.2, 0.2, 0.95), 3.0)
+		draw_line(Vector2(door_size.x - 6, 6), Vector2(6, door_size.y - 6), Color(1, 0.2, 0.2, 0.95), 3.0)

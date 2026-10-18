@@ -1057,6 +1057,7 @@ function generateProceduralLevel(id: number): LevelData {
     case 13: { // Sike Floor & High Ledge
       blocks.push(
         { id: `b${id}_sk_drop`, type: 'solid', x: 130, y: groundY, w: 540, h: 70, initialX: 130, initialY: groundY },
+        { id: `b${id}_sk_step`, type: 'solid', x: 230, y: 295, w: 90, h: 25, initialX: 230, initialY: 295 },
         { id: `b${id}_sk_high`, type: 'solid', x: 80, y: 210, w: 120, h: 25, initialX: 80, initialY: 210 }
       );
       triggers.push({
@@ -1065,7 +1066,7 @@ function generateProceduralLevel(id: number): LevelData {
         action: 'fake_door_reveal',
         params: { distance: 50, realDoorX: 120, realDoorY: 166 }
       });
-      hintText = `Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you.`;
+      hintText = `Tactical Clue: The door in front is a fake! Touch it to spawn the genuine portal on the high ledge at x:80 behind you. Use the middle platform at x:230 to climb up.`;
       break;
     }
     case 14: { // Precision Micro-Pillars
