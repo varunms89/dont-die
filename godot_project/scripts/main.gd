@@ -66,8 +66,22 @@ func _ready() -> void:
 		intro.connect("play_pressed", Callable(self, "_on_intro_play"))
 		intro.connect("level_select_pressed", Callable(self, "_on_intro_level_select"))
 
-	load_level(0)
-	show_intro()
+	var target_lvl: int = 0
+	var skip_intro: bool = false
+	var args = OS.get_cmdline_args()
+	for i in range(args.size()):
+		if args[i] == "--level" and i + 1 < args.size():
+			target_lvl = clampi(int(args[i + 1]) - 1, 0, max(0, levels_data.size() - 1))
+			skip_intro = true
+		elif args[i].begins_with("--level="):
+			target_lvl = clampi(int(args[i].substr(8)) - 1, 0, max(0, levels_data.size() - 1))
+			skip_intro = true
+
+	load_level(target_lvl)
+	if skip_intro:
+		_on_intro_play()
+	else:
+		show_intro()
 
 func show_intro() -> void:
 	death_timer_id += 1

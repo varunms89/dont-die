@@ -83,7 +83,7 @@ func _physics_process(delta: float) -> void:
 		position.y += fall_velocity_y * delta
 
 		# Check if falling ceiling squishes the player (not crumble floors)
-		if fall_velocity_y > 100.0 and block_type != "crumble":
+		if fall_velocity_y > 100.0 and block_type != "crumble" and position.y < 480.0:
 			var space_state = get_world_2d().direct_space_state
 			var query = PhysicsShapeQueryParameters2D.new()
 			var rect_shape = RectangleShape2D.new()
@@ -95,8 +95,8 @@ func _physics_process(delta: float) -> void:
 			for res in results:
 				var collider = res.collider
 				if collider.has_method("kill") and not collider.get("is_dead"):
-					# Only crush if the block started above the player
-					if initial_pos.y < collider.position.y:
+					# Only crush if the block is currently descending onto the player from above
+					if position.y < collider.position.y:
 						collider.kill("Squashed by falling ceiling!")
 
 func _draw() -> void:

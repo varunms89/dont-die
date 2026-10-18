@@ -950,33 +950,35 @@ function generateProceduralLevel(id: number): LevelData {
         { id: `b${id}_cc1`, type: 'crumble', x: 150, y: 360, w: 80, h: 25, initialX: 150, initialY: 360 },
         { id: `b${id}_cc2`, type: 'ice', x: 260, y: 340, w: 90, h: 25, initialX: 260, initialY: 340 },
         { id: `b${id}_cc3`, type: 'crumble', x: 380, y: 320, w: 80, h: 25, initialX: 380, initialY: 320 },
-        { id: `b${id}_cc4`, type: 'solid', x: 490, y: 340, w: 90, h: 25, initialX: 490, initialY: 340 },
+        { id: `b${id}_cc4`, type: 'solid', x: 480, y: 340, w: 100, h: 25, initialX: 480, initialY: 340 },
         { id: `b${id}_ceil_c`, type: 'solid', x: 240, y: -40, w: 140, h: 100, initialX: 240, initialY: -40 }
       );
       spikes.push(
-        { id: `s${id}_cc_j`, direction: 'up', x: 520, y: 316, w: 24, h: 24, initialX: 520, initialY: 316, jumpsWithPlayer: true }
+        { id: `s${id}_cc_j`, direction: 'up', x: 530, y: 316, w: 24, h: 24, initialX: 530, initialY: 316 }
       );
+      door.x = 690;
+      door.initialX = 690;
       triggers.push(
         {
           id: `t${id}_crush2`,
           condition: 'player_x_gt',
           action: 'crush_ceiling',
-          params: { x: 200, blockIds: [`b${id}_ceil_c`], speed: crushSpeed }
+          params: { x: 90, blockIds: [`b${id}_ceil_c`], speed: crushSpeed }
         },
         {
           id: `t${id}_jump2`,
           condition: 'player_jump',
           action: 'jump_spikes',
-          params: { minX: 450, maxX: 580, spikeIds: [`s${id}_cc_j`], force: spikeJumpForce }
+          params: { minX: 400, maxX: 470, spikeIds: [`s${id}_cc_j`], force: spikeJumpForce }
         },
         {
           id: `t${id}_flee2`,
           condition: 'distance_to_door',
           action: 'flee_door',
-          params: { distance: 120, targetX: 750, speed: doorFleeSpeed, message: "SURPRISE! 🤡" }
+          params: { distance: 80, targetX: 755, speed: doorFleeSpeed, message: "SURPRISE! 🤡" }
         }
       );
-      hintText = `Tactical Clue: Triple trap! Hop across the crumbling ice platforms, bait the ceiling drop early, watch for the jumping spike at x:520, and run down the fleeing exit!`;
+      hintText = `Tactical Clue: Triple trap! Bait the ceiling drop early from the start ledge, hop across the ice platforms, watch for the jumping spike at x:530, and run down the fleeing exit!`;
       break;
     }
     case 8: { // Trampoline Air-Strafe
