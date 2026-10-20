@@ -3480,11 +3480,11 @@
       "y": 350
     },
     "door": {
-      "x": 443,
+      "x": 529,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 443,
+      "initialX": 529,
       "initialY": 336
     },
     "blocks": [
@@ -3577,8 +3577,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 700,
+          "distance": 85,
+          "targetX": 704,
+          "targetY": 276,
           "speed": 278,
           "message": "TOO SLOW! 💨"
         }
@@ -6331,11 +6332,11 @@
       "y": 350
     },
     "door": {
-      "x": 444,
+      "x": 526,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 444,
+      "initialX": 526,
       "initialY": 336
     },
     "blocks": [
@@ -6428,8 +6429,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 703,
+          "distance": 85,
+          "targetX": 710,
+          "targetY": 276,
           "speed": 292,
           "message": "TOO SLOW! 💨"
         }
@@ -9202,11 +9204,11 @@
       "y": 350
     },
     "door": {
-      "x": 444,
+      "x": 523,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 444,
+      "initialX": 523,
       "initialY": 336
     },
     "blocks": [
@@ -9299,8 +9301,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 706,
+          "distance": 85,
+          "targetX": 716,
+          "targetY": 276,
           "speed": 305,
           "message": "TOO SLOW! 💨"
         }
@@ -12093,11 +12096,11 @@
       "y": 350
     },
     "door": {
-      "x": 444,
+      "x": 538,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 444,
+      "initialX": 538,
       "initialY": 336
     },
     "blocks": [
@@ -12190,8 +12193,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 709,
+          "distance": 85,
+          "targetX": 712,
+          "targetY": 276,
           "speed": 319,
           "message": "TOO SLOW! 💨"
         }
@@ -14964,11 +14968,11 @@
       "y": 350
     },
     "door": {
-      "x": 454,
+      "x": 539,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 454,
+      "initialX": 539,
       "initialY": 336
     },
     "blocks": [
@@ -15061,8 +15065,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 712,
+          "distance": 85,
+          "targetX": 718,
+          "targetY": 276,
           "speed": 332,
           "message": "TOO SLOW! 💨"
         }
@@ -17815,11 +17820,11 @@
       "y": 350
     },
     "door": {
-      "x": 454,
+      "x": 535,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 454,
+      "initialX": 535,
       "initialY": 336
     },
     "blocks": [
@@ -17912,8 +17917,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 715,
+          "distance": 85,
+          "targetX": 724,
+          "targetY": 276,
           "speed": 376,
           "message": "TOO SLOW! 💨"
         }
@@ -20686,11 +20692,11 @@
       "y": 350
     },
     "door": {
-      "x": 454,
+      "x": 545,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 454,
+      "initialX": 545,
       "initialY": 336
     },
     "blocks": [
@@ -20783,8 +20789,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 718,
+          "distance": 85,
+          "targetX": 720,
+          "targetY": 276,
           "speed": 390,
           "message": "TOO SLOW! 💨"
         }
@@ -23577,11 +23584,11 @@
       "y": 350
     },
     "door": {
-      "x": 443,
+      "x": 524,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 443,
+      "initialX": 524,
       "initialY": 336
     },
     "blocks": [
@@ -23674,8 +23681,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 700,
+          "distance": 85,
+          "targetX": 705,
+          "targetY": 276,
           "speed": 403,
           "message": "TOO SLOW! 💨"
         }
@@ -26448,11 +26456,11 @@
       "y": 350
     },
     "door": {
-      "x": 442,
+      "x": 526,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 442,
+      "initialX": 526,
       "initialY": 336
     },
     "blocks": [
@@ -26545,8 +26553,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 703,
+          "distance": 85,
+          "targetX": 711,
+          "targetY": 276,
           "speed": 417,
           "message": "TOO SLOW! 💨"
         }
@@ -29299,11 +29308,11 @@
       "y": 350
     },
     "door": {
-      "x": 454,
+      "x": 541,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 454,
+      "initialX": 541,
       "initialY": 336
     },
     "blocks": [
@@ -29396,8 +29405,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 706,
+          "distance": 85,
+          "targetX": 717,
+          "targetY": 276,
           "speed": 430,
           "message": "TOO SLOW! 💨"
         }
@@ -32170,11 +32180,11 @@
       "y": 350
     },
     "door": {
-      "x": 454,
+      "x": 537,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 454,
+      "initialX": 537,
       "initialY": 336
     },
     "blocks": [
@@ -32267,8 +32277,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 709,
+          "distance": 85,
+          "targetX": 713,
+          "targetY": 276,
           "speed": 444,
           "message": "TOO SLOW! 💨"
         }
@@ -35061,11 +35072,11 @@
       "y": 350
     },
     "door": {
-      "x": 442,
+      "x": 529,
       "y": 336,
       "w": 32,
       "h": 44,
-      "initialX": 442,
+      "initialX": 529,
       "initialY": 336
     },
     "blocks": [
@@ -35158,8 +35169,9 @@
         "condition": "distance_to_door",
         "action": "flee_door",
         "params": {
-          "distance": 110,
-          "targetX": 712,
+          "distance": 85,
+          "targetX": 719,
+          "targetY": 276,
           "speed": 457,
           "message": "TOO SLOW! 💨"
         }

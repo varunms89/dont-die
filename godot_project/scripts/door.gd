@@ -10,7 +10,7 @@ signal entered()
 var initial_pos: Vector2 = Vector2.ZERO
 var is_fake: bool = false
 var is_fleeing: bool = false
-var target_pos_x: float = 0.0
+var target_pos: Vector2 = Vector2.ZERO
 var flee_speed: float = 380.0
 
 var is_rocket: bool = false
@@ -37,9 +37,10 @@ func setup_door() -> void:
 
 var fake_timer_id: int = 0
 
-func flee_to(target_x: float, speed: float = 380.0) -> void:
+func flee_to(target_x: float, target_y: float = -9999.0, speed: float = 380.0) -> void:
 	is_fleeing = true
-	target_pos_x = target_x
+	var final_y: float = position.y if target_y < -9000.0 else target_y
+	target_pos = Vector2(target_x, final_y)
 	flee_speed = speed
 	AudioManager.play_troll()
 
@@ -69,6 +70,7 @@ func reset_door() -> void:
 	position = initial_pos
 	is_fake = false
 	is_fleeing = false
+	target_pos = Vector2.ZERO
 	is_rocket = false
 	rocket_vy = 0.0
 	is_opened = false
@@ -80,11 +82,13 @@ func _physics_process(delta: float) -> void:
 
 	# Fleeing motion
 	if is_fleeing:
-		var dx: float = target_pos_x - position.x
-		if abs(dx) > 4.0:
-			position.x += sign(dx) * min(abs(dx), flee_speed * delta)
+		var diff: Vector2 = target_pos - position
+		var dist: float = diff.length()
+		var step: float = flee_speed * delta
+		if dist > 4.0 and dist > step:
+			position += diff.normalized() * step
 		else:
-			position.x = target_pos_x
+			position = target_pos
 			is_fleeing = false
 			for body in get_overlapping_bodies():
 				_on_body_entered(body)

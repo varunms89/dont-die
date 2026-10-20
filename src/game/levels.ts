@@ -1631,20 +1631,28 @@ export function generateProceduralLevel(id: number): LevelData {
       const elevW = prng.rangeInt(75, 95);
       const elevX = endX + 15;
       const elevY = 320; // 60px step from ground 380, effortless single jump
+      const doorTargetX = elevX + Math.round((elevW - 32) / 2);
+      const doorTargetY = elevY - 44;
 
       blocks.push(
         { id: `b${id}_fl_elev`, type: 'solid', x: elevX, y: elevY, w: elevW, h: groundY + 70 - elevY, initialX: elevX, initialY: elevY },
         { id: `b${id}_end`, type: 'solid', x: endX, y: groundY, w: endW, h: 70, initialX: endX, initialY: groundY }
       );
 
-      doorX = chain[1].x + 20;
+      doorX = chain[1].x + Math.round(chain[1].w * 0.55);
       doorY = groundY - 44;
 
       triggers.push({
         id: `t${id}_flee`,
         condition: 'distance_to_door',
         action: 'flee_door',
-        params: { distance: 110, targetX: elevX + 20, speed: doorFleeSpeed, message: "TOO SLOW! 💨" }
+        params: {
+          distance: 85,
+          targetX: doorTargetX,
+          targetY: doorTargetY,
+          speed: doorFleeSpeed,
+          message: "TOO SLOW! 💨"
+        }
       });
 
       addPitSpikes([startW, chain[0].x + chain[0].w, chain[1].x + chain[1].w], [chain[0].x, chain[1].x, endX]);

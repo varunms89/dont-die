@@ -546,6 +546,8 @@ class Door:
         self.is_fake = False
         self.is_fleeing = False
         self.target_x = 0.0
+        self.target_y = 0.0
+        self.has_target_y = False
         self.flee_speed = 380.0
         self.is_rocket = False
         self.rocket_vy = 0.0
@@ -562,12 +564,19 @@ class Door:
         self.is_fake = False
         self.fake_timer = 0.0
         self.is_fleeing = False
+        self.has_target_y = False
         self.is_rocket = False
         self.rocket_vy = 0.0
 
-    def flee_to(self, target_x, speed=380.0):
+    def flee_to(self, target_x, target_y=None, speed=380.0):
         self.is_fleeing = True
         self.target_x = target_x
+        if target_y is not None:
+            self.target_y = target_y
+            self.has_target_y = True
+        else:
+            self.target_y = self.y
+            self.has_target_y = False
         self.flee_speed = speed
 
     def launch_rocket(self, new_x, new_y):
@@ -592,9 +601,16 @@ class Door:
 
         if self.is_fleeing:
             dx = self.target_x - self.x
-            if abs(dx) > 4:
-                self.x += math.copysign(min(abs(dx), self.flee_speed * dt), dx)
+            dy = (self.target_y - self.y) if self.has_target_y else 0.0
+            dist = math.hypot(dx, dy)
+            step = self.flee_speed * dt
+            if dist > 4 and dist > step:
+                self.x += (dx / dist) * step
+                self.y += (dy / dist) * step
             else:
+                self.x = self.target_x
+                if self.has_target_y:
+                    self.y = self.target_y
                 self.is_fleeing = False
 
         if self.is_rocket:
@@ -774,9 +790,10 @@ class Game:
 
         elif act == 'flee_door':
             tx = p.get('targetX', self.door.x + 220)
+            ty = p.get('targetY', None)
             spd = p.get('speed', 380)
             msg = p.get('message', 'BYE! 💨')
-            self.door.flee_to(tx, spd)
+            self.door.flee_to(tx, ty, spd)
             self.sounds.play('troll')
             self.spawn_floating_text(msg, self.door.x, self.door.y - 20)
 

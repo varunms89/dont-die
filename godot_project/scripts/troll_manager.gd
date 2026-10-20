@@ -103,9 +103,10 @@ func execute_action(trigger: Dictionary) -> void:
 		"flee_door":
 			if door != null:
 				var target_x: float = float(params.get("targetX", door.position.x + 220.0))
+				var target_y: float = float(params.get("targetY", -9999.0))
 				var speed: float = float(params.get("speed", 380.0))
 				var msg: String = str(params.get("message", "BYE! 💨"))
-				door.flee_to(target_x, speed)
+				door.flee_to(target_x, target_y, speed)
 				spawn_floating_text(msg, door.position + Vector2(0, -20), Color(0.98, 0.75, 0.15))
 
 		"jump_spikes":

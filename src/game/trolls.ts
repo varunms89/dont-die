@@ -115,6 +115,7 @@ export class TrollManager {
       case 'flee_door': {
         level.door.isFleeing = true;
         level.door.targetX = p.targetX !== undefined ? p.targetX : (level.door.x > player.x ? level.door.x + 220 : level.door.x - 220);
+        level.door.targetY = p.targetY !== undefined ? p.targetY : level.door.y;
         level.door.vx = p.speed || 380;
         level.door.trollMessage = p.message || "BYE! 💨";
         sounds.playTrollChime();
@@ -261,12 +262,19 @@ export class TrollManager {
 
     // 3. Update Fleeing Door
     if (level.door.isFleeing && level.door.targetX !== undefined) {
+      const targetY = level.door.targetY !== undefined ? level.door.targetY : level.door.y;
       const dx = level.door.targetX - level.door.x;
+      const dy = targetY - level.door.y;
+      const dist = Math.hypot(dx, dy);
       const speed = level.door.vx || 320;
-      if (Math.abs(dx) > 4) {
-        level.door.x += Math.sign(dx) * Math.min(Math.abs(dx), speed * dt);
+      const step = speed * dt;
+      if (dist > 4 && dist > step) {
+        level.door.x += (dx / dist) * step;
+        level.door.y += (dy / dist) * step;
         particles.emitDoorGlow(level.door.x + level.door.w / 2, level.door.y + level.door.h / 2);
       } else {
+        level.door.x = level.door.targetX;
+        level.door.y = targetY;
         level.door.isFleeing = false;
       }
     }
