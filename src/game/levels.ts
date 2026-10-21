@@ -1,4 +1,4 @@
-import type { LevelData, LevelTheme, Block, Spike, Door, TrollTrigger } from './types';
+import type { LevelData, LevelTheme, Block, BlockType, Spike, Door, TrollTrigger } from './types';
 
 export const THEMES: Record<string, LevelTheme> = {
   cyber_neon: {
