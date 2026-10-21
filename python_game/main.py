@@ -46,8 +46,26 @@ class SoundManager:
             snd.set_volume(volume)
             snd.play()
 
+    def play_music(self, path):
+        if self.muted or not os.path.exists(path):
+            return
+        try:
+            pygame.mixer.music.load(path)
+            pygame.mixer.music.set_volume(0.4)
+            pygame.mixer.music.play(-1)
+        except Exception as e:
+            print(f"Error loading music {path}: {e}")
+
+    def stop_music(self):
+        try:
+            pygame.mixer.music.stop()
+        except Exception:
+            pass
+
     def toggle_mute(self):
         self.muted = not self.muted
+        if self.muted:
+            self.stop_music()
         return self.muted
 
 
@@ -688,10 +706,57 @@ class Game:
         self.executed_triggers = set()
         self.respawn_timer = 0.0
 
-        self.load_level(0)
+        self.save_data_path = os.path.join(base_dir, 'save_data.json')
+        self.save_data = {
+            "entrance_cleared": False,
+            "max_unlocked_level": 0,
+            "deaths_count": 0
+        }
+        self.load_save_data()
+
+        self.intro_song_path = os.path.join(base_dir, 'audio', 'intro_song.wav')
+        self.sounds.play_music(self.intro_song_path)
+
+        start_idx = 0
+        if self.save_data.get('entrance_cleared', False):
+            start_idx = max(1, min(len(self.levels_data) - 1, self.save_data.get('max_unlocked_level', 1)))
+        self.load_level(start_idx)
+
+    def load_save_data(self):
+        if os.path.exists(self.save_data_path):
+            try:
+                with open(self.save_data_path, 'r', encoding='utf-8') as f:
+                    self.save_data = json.load(f)
+                    self.deaths_count = self.save_data.get('deaths_count', 0)
+            except Exception as e:
+                print(f"Error loading save data: {e}")
+
+    def save_save_data(self):
+        try:
+            self.save_data['deaths_count'] = self.deaths_count
+            with open(self.save_data_path, 'w', encoding='utf-8') as f:
+                json.dump(self.save_data, f, indent=2)
+        except Exception as e:
+            print(f"Error saving save data: {e}")
+
+    def is_level_unlocked(self, idx):
+        if idx == 0:
+            return True
+        if not self.save_data.get('entrance_cleared', False):
+            return False
+        return idx <= self.save_data.get('max_unlocked_level', 0)
 
     def load_level(self, idx):
-        self.current_level_idx = max(0, min(len(self.levels_data) - 1, idx))
+        target_idx = max(0, min(len(self.levels_data) - 1, idx))
+        if not self.is_level_unlocked(target_idx):
+            self.sounds.play('trap')
+            if not self.save_data.get('entrance_cleared', False):
+                self.spawn_floating_text("🔒 LOCKED! Clear Entrance Test first! 🎓", 400, 200, (255, 80, 80))
+            else:
+                self.spawn_floating_text(f"🔒 LOCKED! Clear Level {target_idx - 1} first!", 400, 200, (255, 80, 80))
+            return
+
+        self.current_level_idx = target_idx
         self.lvl = self.levels_data[self.current_level_idx]
         theme = self.lvl.get('theme', {})
 
@@ -882,18 +947,29 @@ class Game:
                         jump_released = True
                 elif event.type == pygame.MOUSEBUTTONDOWN and self.show_level_select:
                     mx, my = pygame.mouse.get_pos()
-                    # Click inside level grid
-                    cols = 16
-                    btn_w, btn_h = 40, 28
-                    start_x = 40
-                    start_y = 70
-                    for i in range(min(128, len(self.levels_data))):
-                        bx = start_x + (i % cols) * (btn_w + 5)
-                        by = start_y + (i // cols) * (btn_h + 5)
-                        if pygame.Rect(bx, by, btn_w, btn_h).collidepoint(mx, my):
-                            self.show_level_select = False
-                            self.load_level(i)
-                            break
+                    ent_rect = pygame.Rect(VIEW_W // 2 - 180, 58, 360, 34)
+                    if ent_rect.collidepoint(mx, my):
+                        self.show_level_select = False
+                        self.load_level(0)
+                    else:
+                        cols = 16
+                        btn_w, btn_h = 40, 28
+                        start_x = 40
+                        start_y = 105
+                        for i in range(1, min(129, len(self.levels_data))):
+                            bx = start_x + ((i - 1) % cols) * (btn_w + 5)
+                            by = start_y + ((i - 1) // cols) * (btn_h + 5)
+                            if pygame.Rect(bx, by, btn_w, btn_h).collidepoint(mx, my):
+                                if self.is_level_unlocked(i):
+                                    self.show_level_select = False
+                                    self.load_level(i)
+                                else:
+                                    self.sounds.play('trap')
+                                    if not self.save_data.get('entrance_cleared', False):
+                                        self.spawn_floating_text("🔒 LOCKED! Clear Entrance Test first! 🎓", 400, 200, (255, 80, 80))
+                                    else:
+                                        self.spawn_floating_text(f"🔒 LOCKED! Clear Level {i - 1} first!", 400, 200, (255, 80, 80))
+                                break
 
             keys = pygame.key.get_pressed()
             in_left = keys[pygame.K_a] or keys[pygame.K_LEFT]
@@ -940,9 +1016,21 @@ class Game:
                 if not self.player.is_dead and self.player.rect.colliderect(self.door.rect):
                     if not self.door.is_fake and not self.door.is_fleeing:
                         self.sounds.play('win')
-                        self.spawn_floating_text("LEVEL CLEAR! 🎉", self.door.x, self.door.y - 30, (50, 240, 100))
+                        if self.current_level_idx == 0:
+                            self.save_data['entrance_cleared'] = True
+                            self.save_data['max_unlocked_level'] = max(self.save_data.get('max_unlocked_level', 0), 1)
+                            self.save_save_data()
+                            self.spawn_floating_text("ENTRANCE TEST PASSED! 🎓 LEVEL 1 UNLOCKED!", self.door.x - 60, self.door.y - 30, (50, 255, 100))
+                        else:
+                            nxt = self.current_level_idx + 1
+                            if nxt > self.save_data.get('max_unlocked_level', 1) and nxt < len(self.levels_data):
+                                self.save_data['max_unlocked_level'] = nxt
+                                self.save_save_data()
+                                self.spawn_floating_text(f"LEVEL CLEAR! LEVEL {nxt} UNLOCKED! 🔓", self.door.x - 40, self.door.y - 30, (50, 255, 100))
+                            else:
+                                self.spawn_floating_text("LEVEL CLEAR! 🎉", self.door.x, self.door.y - 30, (50, 240, 100))
                         pygame.display.flip()
-                        pygame.time.delay(600)
+                        pygame.time.delay(700)
                         if self.current_level_idx + 1 < len(self.levels_data):
                             self.load_level(self.current_level_idx + 1)
                         else:
@@ -986,23 +1074,38 @@ class Game:
 
             if self.show_level_select:
                 overlay = pygame.Surface((VIEW_W, VIEW_H), pygame.SRCALPHA)
-                overlay.fill((0, 0, 0, 220))
+                overlay.fill((0, 0, 0, 230))
                 self.screen.blit(overlay, (0, 0))
 
                 head_surf = self.large_font.render("SELECT LEVEL", True, (255, 255, 255))
-                self.screen.blit(head_surf, (VIEW_W // 2 - head_surf.get_width() // 2, 25))
+                self.screen.blit(head_surf, (VIEW_W // 2 - head_surf.get_width() // 2, 18))
+
+                # Entrance Test button
+                ent_rect = pygame.Rect(VIEW_W // 2 - 180, 58, 360, 34)
+                ent_cleared = self.save_data.get('entrance_cleared', False)
+                ent_col = (40, 150, 70) if ent_cleared else (190, 120, 20)
+                pygame.draw.rect(self.screen, ent_col, ent_rect, border_radius=6)
+                pygame.draw.rect(self.screen, (255, 255, 255), ent_rect, width=1, border_radius=6)
+                ent_text = "🎓 ENTRANCE TEST  [CLEARED ★]" if ent_cleared else "🎓 ENTRANCE TEST  [REQUIRED ⚠️]"
+                ent_surf = self.title_font.render(ent_text, True, (255, 255, 255))
+                self.screen.blit(ent_surf, (ent_rect.centerx - ent_surf.get_width() // 2, ent_rect.centery - ent_surf.get_height() // 2))
 
                 cols = 16
                 btn_w, btn_h = 40, 28
                 start_x = 40
-                start_y = 70
-                for i in range(min(128, len(self.levels_data))):
-                    bx = start_x + (i % cols) * (btn_w + 5)
-                    by = start_y + (i // cols) * (btn_h + 5)
+                start_y = 105
+                for i in range(1, min(129, len(self.levels_data))):
+                    bx = start_x + ((i - 1) % cols) * (btn_w + 5)
+                    by = start_y + ((i - 1) // cols) * (btn_h + 5)
                     r = pygame.Rect(bx, by, btn_w, btn_h)
-                    col = (80, 160, 255) if i == self.current_level_idx else (40, 40, 60)
-                    pygame.draw.rect(self.screen, col, r, border_radius=4)
-                    num_surf = self.font.render(str(i + 1), True, (255, 255, 255))
+                    unlocked = self.is_level_unlocked(i)
+                    if unlocked:
+                        col = (80, 160, 255) if i == self.current_level_idx else (50, 50, 75)
+                        pygame.draw.rect(self.screen, col, r, border_radius=4)
+                        num_surf = self.font.render(str(i), True, (255, 255, 255))
+                    else:
+                        pygame.draw.rect(self.screen, (25, 25, 35), r, border_radius=4)
+                        num_surf = self.font.render("🔒", True, (120, 120, 140))
                     self.screen.blit(num_surf, (bx + (btn_w - num_surf.get_width()) // 2, by + 6))
 
             pygame.display.flip()

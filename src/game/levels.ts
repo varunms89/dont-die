@@ -170,6 +170,94 @@ export const THEME_LIST: LevelTheme[] = [
   THEMES.blood_moon
 ];
 
+export const ENTRANCE_TEST_LEVEL: LevelData = {
+  id: 0,
+  title: "ENTRANCE TEST",
+  subtitle: "Trial of Agony | 99.9% Fail",
+  theme: {
+    name: "Obsidian Trial",
+    skyTop: "#0a0110",
+    skyBottom: "#20032b",
+    gridColor: "rgba(244, 63, 94, 0.16)",
+    blockBase: "#14031a",
+    blockTop: "#f43f5e",
+    spikeColor: "#ef4444",
+    spikeGlow: "#ff0055",
+    doorFrame: "#fbbf24",
+    doorPortalStart: "#f43f5e",
+    doorPortalEnd: "#fbbf24",
+    ambientDustColor: "#f43f5e"
+  },
+  width: 800,
+  height: 450,
+  playerStart: { x: 40, y: 350 },
+  door: {
+    x: 565,
+    y: 336,
+    w: 32,
+    h: 44,
+    initialX: 565,
+    initialY: 336
+  },
+  blocks: [
+    // 1. Starting platform
+    { id: 'b0_start', type: 'solid', x: 0, y: 380, w: 140, h: 70, initialX: 0, initialY: 380 },
+    // Invisible ceiling bonker over gap 1 (catches over-eager high hops)
+    { id: 'b0_ceil_bonk', type: 'invisible', x: 145, y: 240, w: 45, h: 25, initialX: 145, initialY: 240 },
+    // 2. Island 1 (solid tip + crumble trap)
+    { id: 'b0_mid1_solid', type: 'solid', x: 200, y: 380, w: 35, h: 70, initialX: 200, initialY: 380 },
+    { id: 'b0_mid1_crumb', type: 'crumble', x: 235, y: 380, w: 65, h: 70, initialX: 235, initialY: 380 },
+    // 3. Island 2 (Guillotine & leaping spike corridor)
+    { id: 'b0_mid2', type: 'solid', x: 360, y: 380, w: 130, h: 70, initialX: 360, initialY: 380 },
+    { id: 'b0_crush', type: 'solid', x: 375, y: 110, w: 55, h: 50, initialX: 375, initialY: 110, color: '#e11d48' },
+    // 4. Island 3 (The decoy door island)
+    { id: 'b0_mid3', type: 'solid', x: 540, y: 380, w: 100, h: 70, initialX: 540, initialY: 380 },
+    // 5. Final high pillar (True exit perch)
+    { id: 'b0_pillar', type: 'solid', x: 710, y: 300, w: 80, h: 150, initialX: 710, initialY: 300 }
+  ],
+  spikes: [
+    // Pit 1 spikes (gap 140..200)
+    { id: 's0_pit1', direction: 'up', x: 158, y: 426, w: 24, h: 24, initialX: 158, initialY: 426 },
+    // Pit 2 spikes (gap 300..360)
+    { id: 's0_pit2', direction: 'up', x: 322, y: 426, w: 24, h: 24, initialX: 322, initialY: 426 },
+    // Island 2 leaping spike
+    { id: 's0_leap', direction: 'up', x: 440, y: 356, w: 24, h: 24, initialX: 440, initialY: 356, jumpsWithPlayer: true },
+    // Pit 3 spikes (gap 490..540)
+    { id: 's0_pit3', direction: 'up', x: 505, y: 426, w: 24, h: 24, initialX: 505, initialY: 426 },
+    // Pit 4 spikes (gap 640..710)
+    { id: 's0_pit4_1', direction: 'up', x: 652, y: 426, w: 24, h: 24, initialX: 652, initialY: 426 },
+    { id: 's0_pit4_2', direction: 'up', x: 682, y: 426, w: 24, h: 24, initialX: 682, initialY: 426 }
+  ],
+  triggers: [
+    // Guillotine ceiling drops when jumping in corridor
+    {
+      id: 't0_crush',
+      condition: 'player_jump',
+      action: 'crush_ceiling',
+      params: { minX: 350, maxX: 430, blockIds: ['b0_crush'], speed: 650 }
+    },
+    // Leaping spike jumps when hopping near it
+    {
+      id: 't0_leap',
+      condition: 'player_jump',
+      action: 'jump_spikes',
+      params: { minX: 390, maxX: 470, spikeIds: ['s0_leap'], force: 490 }
+    },
+    // Decoy door reveals sike and relocates to final pillar!
+    {
+      id: 't0_fake',
+      condition: 'distance_to_door',
+      action: 'fake_door_reveal',
+      params: { distance: 80, realDoorX: 735, realDoorY: 256 }
+    }
+  ],
+  gravityDirection: 1,
+  icePhysics: false,
+  darkRoom: false,
+  initialHint: "ENTRANCE TEST: Prove you have what it takes to enter the 256 chambers.",
+  hint: "Tactical Clue: Leap low over gap 1 to dodge the ceiling block, run quickly off the crumble floor, bait the leaping spike, beware the decoy door, and leap to the true pillar!"
+};
+
 const BASE_LEVELS: LevelData[] = [
   // LEVEL 1: First Steps
   {
@@ -1922,6 +2010,7 @@ export function generateProceduralLevel(id: number): LevelData {
 
 export const LEVELS: LevelData[] = (() => {
   const all: LevelData[] = [];
+  all.push(ENTRANCE_TEST_LEVEL);
   BASE_LEVELS.forEach(lvl => {
     all.push({
       ...lvl,

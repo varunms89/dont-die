@@ -45,7 +45,7 @@ func _ready() -> void:
 	if $MobileControls:
 		$MobileControls.visible = DisplayServer.is_touchscreen_available() or OS.has_feature("mobile")
 
-	populate_level_grid(256)
+	populate_level_grid(256, 0, false)
 
 func update_hud(title: String, subtitle: String, deaths: int, hint: String) -> void:
 	if title_label:
@@ -56,18 +56,68 @@ func update_hud(title: String, subtitle: String, deaths: int, hint: String) -> v
 	if hint_banner and hint_banner.visible and hint_label:
 		hint_label.text = current_hint_text
 
-func populate_level_grid(total_levels: int) -> void:
+var entrance_button: Button = null
+
+func populate_level_grid(total_levels: int = 256, max_unlocked: int = 0, entrance_cleared: bool = false) -> void:
 	if level_grid == null:
 		return
+
+	# Setup Entrance Test button in VBox above Scroll if not present
+	var vbox = level_select_modal.get_node_or_null("VBox") if level_select_modal else null
+	if vbox and entrance_button == null:
+		entrance_button = Button.new()
+		entrance_button.custom_minimum_size = Vector2(0, 42)
+		entrance_button.add_theme_font_size_override("font_size", 15)
+		vbox.add_child(entrance_button)
+		vbox.move_child(entrance_button, 1)
+		entrance_button.pressed.connect(func():
+			if level_select_modal:
+				level_select_modal.visible = false
+			emit_signal("level_selected", 0)
+		)
+
+	if entrance_button:
+		if entrance_cleared:
+			entrance_button.text = "🎓 ENTRANCE TEST  [CLEARED ★]"
+			entrance_button.modulate = Color(0.4, 1.0, 0.5)
+		else:
+			entrance_button.text = "🎓 ENTRANCE TEST  [REQUIRED ⚠️ - PASS TO UNLOCK]"
+			entrance_button.modulate = Color(1.0, 0.85, 0.2)
+
+	# Update header text
+	var header = vbox.get_node_or_null("Header") as Label if vbox else null
+	if header:
+		if not entrance_cleared:
+			header.text = "SELECT LEVEL — ⚠️ ENTRANCE TEST REQUIRED"
+		else:
+			header.text = "SELECT LEVEL (Unlocked: %d / %d)" % [min(max_unlocked, total_levels), total_levels]
+
 	for child in level_grid.get_children():
 		child.queue_free()
 
 	for i in range(1, total_levels + 1):
 		var btn = Button.new()
-		btn.text = str(i)
 		btn.custom_minimum_size = Vector2(44, 36)
-		btn.pressed.connect(_on_select_level.bind(i - 1))
+		if entrance_cleared and i <= max_unlocked:
+			btn.text = str(i)
+			btn.modulate = Color(1.0, 1.0, 1.0, 1.0)
+			btn.pressed.connect(_on_select_level.bind(i))
+		else:
+			btn.text = "🔒"
+			btn.modulate = Color(0.45, 0.45, 0.55, 0.65)
+			btn.pressed.connect(func():
+				_on_locked_level_clicked(i, entrance_cleared)
+			)
 		level_grid.add_child(btn)
+
+func _on_locked_level_clicked(level_num: int, entrance_cleared: bool) -> void:
+	AudioManager.play_trap()
+	var root = get_tree().current_scene
+	if root and root.has_method("spawn_floating_text"):
+		if not entrance_cleared:
+			root.spawn_floating_text("🔒 LOCKED! Clear the Entrance Test first! 🎓", Vector2(400, 200), Color(1.0, 0.35, 0.35))
+		else:
+			root.spawn_floating_text("🔒 LOCKED! Clear Level %d first!" % (level_num - 1), Vector2(400, 200), Color(1.0, 0.35, 0.35))
 
 func _on_restart_pressed() -> void:
 	emit_signal("restart_requested")

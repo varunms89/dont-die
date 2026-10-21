@@ -590,7 +590,9 @@ export class Hud {
   }
 
   public isLevelUnlocked(levelId: number): boolean {
-    if (levelId <= 1) return true;
+    if (levelId === 0) return true;
+    if (!this.completedLevels.has(0)) return false;
+    if (levelId === 1) return true;
     return this.completedLevels.has(levelId - 1) || this.completedLevels.has(levelId);
   }
 
@@ -607,8 +609,14 @@ export class Hud {
       currentWorld = worldNum;
       const startLevel = (worldNum - 1) * levelsPerWorld + 1;
       const endLevel = Math.min(totalLevelsCount, worldNum * levelsPerWorld);
+      const isEntranceDone = this.completedLevels.has(0);
 
       let gridHtml = `
+        <div class="entrance-test-banner" style="margin-bottom: 12px; display: flex; justify-content: center;">
+          <button class="level-card entrance-card ${isEntranceDone ? 'completed' : 'required'}" data-level="0" style="width: 100%; max-width: 500px; padding: 10px 16px; font-weight: bold; font-size: 14px; border-radius: 8px; cursor: pointer; background: ${isEntranceDone ? '#065f46' : '#9a3412'}; color: #fff; border: 2px solid ${isEntranceDone ? '#34d399' : '#f59e0b'};">
+            🎓 ENTRANCE TEST  ${isEntranceDone ? '[CLEARED ★]' : '[REQUIRED ⚠️ - PASS TO UNLOCK]'}
+          </button>
+        </div>
         <div class="level-modal-toolbar">
           <div class="world-tabs">
       `;
@@ -668,7 +676,9 @@ export class Hud {
             sounds.playDeath();
             const toast = document.createElement('div');
             toast.className = 'rage-toast';
-            toast.textContent = `🔒 LEVEL ${val} LOCKED! Complete Level ${val - 1} first!`;
+            toast.textContent = !this.completedLevels.has(0)
+              ? `🔒 LOCKED! Complete the Entrance Test first!`
+              : `🔒 LEVEL ${val} LOCKED! Complete Level ${val - 1} first!`;
             this.container.appendChild(toast);
             setTimeout(() => toast.remove(), 1200);
             return;
@@ -690,7 +700,9 @@ export class Hud {
             sounds.playDeath();
             const toast = document.createElement('div');
             toast.className = 'rage-toast';
-            toast.textContent = `🔒 LEVEL ${lvl} LOCKED! Beat Level ${lvl - 1} to unlock!`;
+            toast.textContent = !this.completedLevels.has(0)
+              ? `🔒 LOCKED! Pass the Entrance Test first!`
+              : `🔒 LEVEL ${lvl} LOCKED! Beat Level ${lvl - 1} to unlock!`;
             this.container.appendChild(toast);
             setTimeout(() => toast.remove(), 1200);
             return;

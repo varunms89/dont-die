@@ -34,6 +34,46 @@ var is_dark_room: bool = false
 var death_timer_id: int = 0
 var transition_id: int = 0
 
+var save_data: Dictionary = {
+	"entrance_cleared": false,
+	"max_unlocked_level": 0,
+	"deaths_count": 0
+}
+
+func load_save_data() -> void:
+	var path = "user://save_data.json"
+	if FileAccess.file_exists(path):
+		var file = FileAccess.open(path, FileAccess.READ)
+		var text = file.get_as_text()
+		var json = JSON.new()
+		if json.parse(text) == OK and json.data is Dictionary:
+			save_data = json.data
+			deaths_count = int(save_data.get("deaths_count", 0))
+
+func save_save_data() -> void:
+	var path = "user://save_data.json"
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	if file:
+		save_data["deaths_count"] = deaths_count
+		file.store_string(JSON.stringify(save_data, "\t"))
+
+func is_level_unlocked(lvl_idx: int) -> bool:
+	if lvl_idx == 0:
+		return true # Entrance test is always accessible
+	var entrance_cleared: bool = bool(save_data.get("entrance_cleared", false))
+	if not entrance_cleared:
+		return false
+	var max_unlocked: int = int(save_data.get("max_unlocked_level", 0))
+	return lvl_idx <= max_unlocked
+
+func sync_progression_ui() -> void:
+	var entrance_cleared: bool = bool(save_data.get("entrance_cleared", false))
+	var max_unlocked: int = int(save_data.get("max_unlocked_level", 0))
+	if intro and intro.has_method("update_intro_state"):
+		intro.update_intro_state(entrance_cleared, max_unlocked)
+	if hud and hud.has_method("populate_level_grid"):
+		hud.populate_level_grid(max(1, levels_data.size() - 1), max_unlocked, entrance_cleared)
+
 func _ready() -> void:
 	if intro_layer == null:
 		intro_layer = CanvasLayer.new()
@@ -56,6 +96,8 @@ func _ready() -> void:
 	add_child(darkness_rect)
 
 	load_all_levels()
+	load_save_data()
+	sync_progression_ui()
 
 	if hud:
 		hud.connect("restart_requested", Callable(self, "restart_level"))
@@ -71,11 +113,17 @@ func _ready() -> void:
 	var args = OS.get_cmdline_args()
 	for i in range(args.size()):
 		if args[i] == "--level" and i + 1 < args.size():
-			target_lvl = clampi(int(args[i + 1]) - 1, 0, max(0, levels_data.size() - 1))
+			target_lvl = clampi(int(args[i + 1]), 0, max(0, levels_data.size() - 1))
 			skip_intro = true
 		elif args[i].begins_with("--level="):
-			target_lvl = clampi(int(args[i].substr(8)) - 1, 0, max(0, levels_data.size() - 1))
+			target_lvl = clampi(int(args[i].substr(8)), 0, max(0, levels_data.size() - 1))
 			skip_intro = true
+
+	if not skip_intro:
+		if bool(save_data.get("entrance_cleared", false)):
+			target_lvl = clampi(int(save_data.get("max_unlocked_level", 1)), 1, max(0, levels_data.size() - 1))
+		else:
+			target_lvl = 0
 
 	load_level(target_lvl)
 	if skip_intro:
@@ -87,6 +135,7 @@ func show_intro() -> void:
 	death_timer_id += 1
 	transition_id += 1
 	is_transitioning = false
+	sync_progression_ui()
 	if darkness_rect:
 		darkness_rect.visible = false
 	if intro_layer:
@@ -158,6 +207,13 @@ func load_level(index: int) -> void:
 	if levels_data.is_empty():
 		return
 
+	var target_idx = clamp(index, 0, levels_data.size() - 1)
+	if not is_level_unlocked(target_idx):
+		AudioManager.play_trap()
+		var msg = "🔒 LOCKED! Clear the Entrance Test first! 🎓" if not bool(save_data.get("entrance_cleared", false)) else ("🔒 LOCKED! Clear Level %d first!" % (target_idx - 1))
+		spawn_floating_text(msg, Vector2(400, 200), Color(1.0, 0.35, 0.35))
+		return
+
 	death_timer_id += 1
 	transition_id += 1
 
@@ -175,7 +231,7 @@ func load_level(index: int) -> void:
 		player.visible = true
 		player.set_physics_process(true)
 
-	current_level_index = clamp(index, 0, levels_data.size() - 1)
+	current_level_index = target_idx
 	var lvl_data: Dictionary = levels_data[current_level_index]
 
 	is_dark_room = bool(lvl_data.get("darkRoom", false))
@@ -327,13 +383,32 @@ func _on_level_cleared() -> void:
 	if player:
 		player.set_physics_process(false)
 		player.velocity = Vector2.ZERO
-	spawn_floating_text("LEVEL CLEAR! 🎉", current_door.position + Vector2(0, -30), Color(0.2, 0.95, 0.4))
-	await get_tree().create_timer(0.65).timeout
+
+	var next_lvl = current_level_index + 1
+	if current_level_index == 0:
+		save_data["entrance_cleared"] = true
+		var cur_max = int(save_data.get("max_unlocked_level", 0))
+		save_data["max_unlocked_level"] = max(cur_max, 1)
+		save_save_data()
+		sync_progression_ui()
+		AudioManager.play_win()
+		spawn_floating_text("ENTRANCE TEST PASSED! 🎓 LEVEL 1 UNLOCKED!", current_door.position + Vector2(-60, -35), Color(0.2, 0.98, 0.4))
+	else:
+		var cur_max = int(save_data.get("max_unlocked_level", 1))
+		if next_lvl > cur_max and next_lvl < levels_data.size():
+			save_data["max_unlocked_level"] = next_lvl
+			save_save_data()
+			sync_progression_ui()
+			spawn_floating_text("LEVEL CLEAR! LEVEL %d UNLOCKED! 🔓" % next_lvl, current_door.position + Vector2(-40, -30), Color(0.2, 0.98, 0.4))
+		else:
+			spawn_floating_text("LEVEL CLEAR! 🎉", current_door.position + Vector2(0, -30), Color(0.2, 0.98, 0.4))
+
+	await get_tree().create_timer(0.85).timeout
 	if this_trans_id != transition_id:
 		return
 
-	if current_level_index + 1 < levels_data.size():
-		load_level(current_level_index + 1)
+	if next_lvl < levels_data.size():
+		load_level(next_lvl)
 	else:
 		spawn_floating_text("YOU BEAT THE GAME! 🏆", Vector2(400, 200), Color(1, 0.8, 0.2))
 

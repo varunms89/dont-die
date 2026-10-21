@@ -8,14 +8,19 @@ var door_sfx: AudioStream
 var win_sfx: AudioStream
 var dash_sfx: AudioStream
 var double_jump_sfx: AudioStream
+var intro_music: AudioStream
 
 var is_muted: bool = false
 var audio_players: Array[AudioStreamPlayer] = []
 var max_players: int = 8
+var music_player: AudioStreamPlayer
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
+	music_player = AudioStreamPlayer.new()
+	add_child(music_player)
+
 	if ResourceLoader.exists("res://audio/jump.wav"):
 		jump_sfx = load("res://audio/jump.wav")
 	if ResourceLoader.exists("res://audio/death.wav"):
@@ -32,6 +37,10 @@ func _ready() -> void:
 		dash_sfx = load("res://audio/dash.wav")
 	if ResourceLoader.exists("res://audio/double_jump.wav"):
 		double_jump_sfx = load("res://audio/double_jump.wav")
+	if ResourceLoader.exists("res://audio/intro_song.wav"):
+		intro_music = load("res://audio/intro_song.wav")
+		if intro_music is AudioStreamWAV:
+			intro_music.loop_mode = AudioStreamWAV.LOOP_FORWARD
 
 	for i in range(max_players):
 		var p = AudioStreamPlayer.new()
@@ -77,6 +86,20 @@ func play_door() -> void:
 func play_win() -> void:
 	play_sfx(win_sfx, 0.0)
 
+func play_intro_song() -> void:
+	if is_muted or intro_music == null or music_player == null:
+		return
+	if not music_player.playing:
+		music_player.stream = intro_music
+		music_player.volume_db = -5.0
+		music_player.play()
+
+func stop_intro_song() -> void:
+	if music_player and music_player.playing:
+		music_player.stop()
+
 func toggle_mute() -> bool:
 	is_muted = !is_muted
+	if is_muted:
+		stop_intro_song()
 	return is_muted

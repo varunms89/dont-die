@@ -25,11 +25,25 @@ func _ready() -> void:
 func show_intro_screen() -> void:
 	visible = true
 	set_process(true)
+	AudioManager.play_intro_song()
 	queue_redraw()
 
 func hide_intro() -> void:
 	visible = false
 	set_process(false)
+	AudioManager.stop_intro_song()
+
+func update_intro_state(entrance_cleared: bool, max_unlocked: int) -> void:
+	if not entrance_cleared:
+		if subtitle_label:
+			subtitle_label.text = "⚠️ ENTRANCE TEST REQUIRED TO UNLOCK GAME"
+		if play_btn:
+			play_btn.text = "🎓 TAKE ENTRANCE TEST"
+	else:
+		if subtitle_label:
+			subtitle_label.text = "Welcome Back! Level %d / 256 Unlocked" % max_unlocked
+		if play_btn:
+			play_btn.text = "▶ PLAY LEVEL %d" % max_unlocked
 
 func _process(delta: float) -> void:
 	if not is_visible_in_tree() or not visible:
